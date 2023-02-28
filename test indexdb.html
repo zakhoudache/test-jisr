@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>IndexedDB Test</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  </head>
+  <body>
+    <h1>IndexedDB Test</h1>
+    <p>
+      Enter information to add to the table:
+      <input type="text" id="filenameC" placeholder="Filename C">
+      <input type="text" id="filenameO" placeholder="Filename O">
+      <!-- <input type="text" id="imageOrder" placeholder="Image Order"> -->
+      <button id="addButton">Add Row</button>
+      <button id="clearButton">Clear Table</button>
+    </p>
+    <table id="myTable">
+      <thead>
+        <tr>
+          <th>Filename C</th>
+          <th>Filename O</th>
+          <!-- <th>Image Order</th> -->
+        </tr>
+      </thead>
+      <tbody>
+      </tbody>
+    </table>
+
+    <script>
+      // Open the database
+      let dbName = "myDatabase";
+      let objectStoreName = "images";
+      let request = window.indexedDB.open(dbName, 1);
+
+      request.onupgradeneeded = function(event) {
+        let db = event.target.result;
+        let objectStore = db.createObjectStore(objectStoreName, { autoIncrement: true });
+      };
+
+      request.onerror = function() {
+        console.log("Error opening the database");
+      };
+
+      request.onsuccess = function(event) {
+        let db = event.target.result;
+        // Display existing data in the table
+let transaction = db.transaction(objectStoreName, "readonly");
+let objectStore = transaction.objectStore(objectStoreName);
+let request = objectStore.getAll();
+
+request.onsuccess = function(event) {
+let data = event.target.result;
+
+let tableBody = document.getElementById("myTable").getElementsByTagName("tbody")[0];
+
+for (let i = 0; i < data.length; i++) {
+let row = createTableRow(data[i]);
+tableBody.appendChild(row);
+}
+};
+
+function createTableRow(image) {
+let filenameC = image.filenameC;
+let filenameO = image.filenameO;
+// let imageOrder = image.imageOrder;
+
+let row = document.createElement("tr");
+
+let filenameCCell = document.createElement("td");
+filenameCCell.textContent = filenameC;
+row.appendChild(filenameCCell);
+
+let filenameOCell = document.createElement("td");
+filenameOCell.textContent = filenameO;
+row.appendChild(filenameOCell);
+
+
+return row;
+}
+
+function addRow() {
+// Get the input values from the form
+const filenameC = document.getElementById("filenameC").value;
+const filenameO = document.getElementById("filenameO").value;
+
+const table = document.getElementById("myTable");
+const imageOrder = table.rows.length;
+// const imageOrder = document.getElementById("imageOrder").value;
+
+// Validate the input values
+if (!filenameC || !filenameO ) {
+alert("Please enter a filename and image order.");
+return;
+}
+
+// Add the data to IndexedDB
+let transaction = db.transaction(objectStoreName, "readwrite");
+let objectStore = transaction.objectStore(objectStoreName);
+let request = objectStore.add({ filenameC, filenameO, imageOrder });
+
+request.onsuccess = function() {
+// Add the new row to the table
+let newData = { filenameC, filenameO, imageOrder };
+let row = createTableRow(newData);
+let tableBody = document.getElementById("myTable").getElementsByTagName("tbody")[0];
+tableBody.appendChild(row);
+// Clear the input fields
+document.getElementById("filenameC").value = "";
+document.getElementById("filenameO").value = "";
+// document.getElementById("imageOrder").value = "";
+
+};
+
+request.onerror = function() {
+console.log("Error adding data to IndexedDB");
+};
+}
+
+// S
+// Add event listeners
+const addButton = document.getElementById("addButton");
+const clearButton = document.getElementById("clearButton");
+const $table = $("#myTable tbody");
+
+addButton.addEventListener("click", addRow);
+clearButton.addEventListener("click", clearTable);
+
+function clearTable() {
+  // Clear the table
+  let tableBody = document.getElementById("myTable").getElementsByTagName("tbody")[0];
+  tableBody.innerHTML = "";
+
+  // Clear the object store
+  let transaction = db.transaction(objectStoreName, "readwrite");
+  let objectStore = transaction.objectStore(objectStoreName);
+  objectStore.clear();
+}
+
+
+// function addData(db, storeName, filenameC, filenameO) {
+//   // Generate a unique image order based on the number of rows in the table
+//   const table = document.getElementById("myTable");
+//   const imageOrder = table.rows.length;
+
+//   // Create a new object with the input values and generated image order
+//   const data = { filenameC, filenameO, imageOrder };
+// // Validate the input values
+// // if (!filenameC || !filenameO ) {
+// // alert("Please enter a filename and image order.");
+// // return;
+// // }
+//   // Add the data to the IndexedDB object store
+//   const transaction = db.transaction(storeName, "readwrite");
+//   const objectStore = transaction.objectStore(storeName);
+//   const request = objectStore.add(data);
+
+
+//   request.onsuccess = function(event) {
+//     console.log("Data added to " + storeName);
+    
+//   // Create a new table row with the data and append it to the table
+//   const row = createTableRow(data);
+//   const tableBody = document.getElementById("myTable").getElementsByTagName("tbody")[0];
+//   tableBody.appendChild(row);
+//   };
+
+//   request.onerror = function(event) {
+//     console.log("Error adding data to " + storeName);
+//   };
+
+
+
+
+
+
+//   // Get the input values from the form
+// const filenameC = document.getElementById("filenameC").value;
+// const filenameO = document.getElementById("filenameO").value;
+// // const imageOrder = document.getElementById("imageOrder").value;
+
+// // Validate the input values
+// if (!filenameC || !filenameO ) {
+// alert("Please enter a filename and image order.");
+// return;
+// }
+
+// // Add the data to IndexedDB
+// let transaction = db.transaction(objectStoreName, "readwrite");
+// let objectStore = transaction.objectStore(objectStoreName);
+// let request = objectStore.add({ filenameC, filenameO, imageOrder });
+
+//   request.onsuccess = function() {
+// // Add the new row to the table
+// let newData = { filenameC, filenameO, imageOrder };
+// let row = createTableRow(newData);
+// let tableBody = document.getElementById("myTable").getElementsByTagName("tbody")[0];
+// tableBody.appendChild(row);
+// // Clear the input fields
+// document.getElementById("filenameC").value = "";
+// document.getElementById("filenameO").value = "";
+// // document.getElementById("imageOrder").value = "";
+
+// };
+
+// request.onerror = function() {
+// console.log("Error adding data to IndexedDB");
+// };
+// }
+
+
+function addObjectStoreData(db, storeName, data) {
+  const transaction = db.transaction(storeName, "readwrite");
+  const objectStore = transaction.objectStore(storeName);
+  const request = objectStore.add(data);
+  request.onerror = (event) => {
+    console.log("Error adding data", event.target.error);
+  };
+  request.onsuccess = (event) => {
+    console.log("Data added successfully");
+  };
+}
+      }
+</script>
+  </body>
+</html>

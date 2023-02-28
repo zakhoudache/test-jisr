@@ -1,0 +1,24 @@
+
+<!DOCTYPE html>
+<html>
+ <head>
+<body>
+
+    <!-- HTML code for file2.html -->
+<img src="" id="myImage">
+
+<script>
+  // Get the imagePath parameter from the URL
+  let params = new URLSearchParams(window.location.search);
+  let imagePath = params.get("imagePath");
+
+  // Set the src attribute of the <img> tag to the imagePath
+  let myImage = document.getElementById("myImage");
+  myImage.src = imagePath;
+</script>
+
+</body>
+  </head>
+
+ 
+</html>

@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+/* <link rel="stylesheet" type="text/css" href="my-style.css"> */
+    /* Style the table */
+#myTable {
+  font-family: Arial, sans-serif;
+  border-collapse: collapse;
+  width: 100%;
+}
+
+/* Style the table header */
+#myTable th {
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: left;
+  background-color: #f2f2f2;
+}
+
+/* Style the table rows */
+#myTable tr {
+  border: 1px solid #ddd;
+}
+
+/* Style the table cell */
+#myTable td {
+  border: 1px solid #ddd;
+  padding: 8px;
+}
+
+          body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        overflow:auto;
+        margin-top:-50px;
+        min-height:983px;
+        margin-bottom:0px;
+      }
+      h1 {
+        /* text-align: center;
+        color: #333;
+        margin-top: 50px; */
+        display:none;
+      }
+      .image-container {
+        display: flex;
+        justify-content: center;
+        /* margin-top: 100px; */
+        margin-top:0px;
+        transform:translatex(-168px) translatey(91px);
+ padding-right:0px;
+ margin-right:0px;
+ margin-left:358px;
+        
+        
+      }
+      .image-container img:nth-child(1){
+ transform:translatex(57px) translatey(66px) !important;
+}
+.image-container img:nth-child(2){
+ transform:translatex(41px) translatey(36px);
+}
+
+
+      .image-container .container {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+        grid-gap: 50px;
+        max-width: 1000px;
+        width: 80%;
+        margin: 0 auto;
+        background-color: #fff;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+        border-radius: 10px;
+        overflow: hidden;
+        margin-left:90px;
+        margin-right:47px;
+ width:1000px;
+ transform:translatex(-154px) translatey(43px);
+      }
+      .image-container .container img {
+        max-width: 80%;
+        height: auto;
+        object-fit: cover;
+        transition: all 0.3s ease-in-out;
+        transform:translatex(40px) translatey(65px) !important;
+      }
+      /* .image-container .container img:hover {
+        transform: scale(1.05);
+      } */
+      .image-container .container .image-info {
+        padding: 19px;
+        font-size: 14px;
+        text-align: center;
+        background-color: #d9d9d9;
+        color: #333;
+        border-bottom-left-radius: 10px;
+        border-bottom-right-radius: 10px;
+      }
+      .image-container .container .buttons {
+        display: flex;
+        justify-content: center;
+        margin-top: 10px;
+        min-height:53px;
+        height:53px;
+        transform:translatex(-5px) translatey(12px);
+      }
+      .image-container .container .buttons button {
+        width: 120px;
+        height: 40px;
+        margin: 0 10px;
+        background-color: #2196F3;
+        color: #fff;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 16px;
+        font-weight: bold;
+        text-transform: uppercase;
+      }
+      .image-container .container .buttons button:hover {
+        background-color: #0b7dda;
+        /* background-color:#201f2d */
+      }
+      .container .buttons .validate button:hover{
+ background-color:#3a328f !important;
+}
+.container .buttons .refuse{
+ background-color:#731b38 !important;
+}
+
+      .image-info {
+    padding: 15px;
+    font-size: 14px;
+    text-align: center;
+    background-color: #dfd9d9;
+}
+.image-container img{
+ border-top-left-radius:10px;
+ border-top-right-radius:10px;
+ border-bottom-left-radius:10px;
+ border-bottom-right-radius:10px;
+ transform:translatex(40px) translatey(50px) !important;
+ border-style:solid;
+ border-width:2px;
+}
+textarea{
+ /* transform:translatex(142px) translatey(813px); */
+ /* transform:translatex(121px) translatey(750px); */
+ margin-bottom:1px;
+ overflow:visible !important;
+ min-height:187px;
+ border-color:#070707;
+ /* border-width:1px; */
+ /* transform:translatex(142px) translatey(724px); */
+ position:relative;
+ top:50px;
+ height:104px;
+ background-color:#f2f2f2;
+ /* transform:translatex(130px) translatey(557px); */
+ transform:translatex(106px) translatey(494px);
+}
+.image-container textarea{
+  transform:translatex(46px) translatey(263px);
+ padding-top:9px;
+ height:84px;
+ margin-top:14px;
+ min-height:84px;
+}
+
+  </style>
+</head>
+<!--  -->
+<body>
+  
+  <!-- <h1>Image Container Example</h1>
+  <div class="image-container">
+<div class="container">
+<img src="src\public\Images\Zaki\Chifa@Zaki30.jpg" alt="National ID">
+<img src="src\public\Images\Zaki\Ordonnance@Zaki.jpg" alt="Prescription">
+<div class="image-info">
+<p>Uploaded on: 14 February 2023</p>
+</div>
+<textarea rows="4" cols="50">Enter the reason for refusal here</textarea>
+<div class="buttons">
+<button class="showImages">Show Images</button>
+<button class="validate">Validate</button>
+<button class="refuse">Refuse</button>
+</div>
+</div>
+</div> -->
+<p id="texts"></p>
+<!-- <p id="texts2"></p> -->
+<a id="variable"></a>
+<!-- <a id="variable2"></a> -->
+<!-- <button id="showImages">Show Images</button> -->
+     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  
+    <script>
+
+      function checkForNewImages() {
+  // Read the last line of the text file containing the paths of the images
+  $.ajax({
+    url: "http://127.0.0.1:5500/ListFilename.txt",
+     success: function(data) {
+         
+      // Split the contents of the file into separate lines
+      var lines = data.split("\n");
+      
+      // Get the last line (which should contain the path of the most recently added image)
+      let addedFilenames = JSON.parse(localStorage.getItem("addedFilenames")) || [];
+      let imageOrder = JSON.parse(localStorage.getItem("imageOrder")) || [];
+      var lastLineC = lines[lines.length - 2];
+      // Check if the last image has already been added
+      if (!addedFilenames.includes(lastLineC)) {
+        // Add the last image to the added filenames list
+        addedFilenames.push(lastLineC);
+        imageOrder.push(lastLineC);
+        // Store the updated list of added filenames and image order in local storage
+        localStorage.setItem("addedFilenames", JSON.stringify(addedFilenames));
+        localStorage.setItem("imageOrder", JSON.stringify(imageOrder));
+
+        // Only add the image container if the last line is not empty (i.e., if a new image has been added)
+        console.log(lastLineC.trim());
+        if (lastLineC.trim().length > 0) {
+          // Sort the images based on the order they were added
+          imageOrder.sort(function(a, b) {
+            return addedFilenames.indexOf(a) - addedFilenames.indexOf(b);
+          });
+
+
+          // Define the table and table headers
+var $table = $("<table></table>");
+var $headerRow = $("<tr></tr>");
+$headerRow.append("<th>Text</th>");
+$headerRow.append("<th>Link</th>");
+$table.append($headerRow);
+
+// Append the table to the page
+$("#table-container").append($table);
+
+// Create a new row and add it to the table
+var $row = $("<tr></tr>");
+$table.append($row);
+
+// Create a new cell for the text and add it to the row
+var $textCell = $("<td></td>");
+$textCell.text(lastLineC.trim());
+$row.append($textCell);
+
+// Create a new cell for the link and add it to the row
+var $linkCell = $("<td></td>");
+$linkCell.append(`<a href="src/Site1/Accueil.html?id=${lastLineC}">Go to Page Accueil-C.html</a>`);
+$row.append($linkCell);
+
+
+//           var $row = $("<tr></tr>");
+// $("#myTable tbody").append($row);
+
+// // Add an empty cell for each column in the row
+// var numOfCols = $("#myTable thead th").length;
+// for (var i = 0; i < numOfCols; i++) {
+//   $row.append("<td></td>");
+// }
+//   // Create a new cell for the text and add it to the row
+//   var $textCell = $("<td></td>");
+//   $textCell.text(lastLineC.trim());
+//   $row.append($textCell);
+
+//   // Create a new cell for the link and add it to the row
+//   var $linkCell = $("<td></td>");
+//   $linkCell.append(`<a href="src/Site1/Accueil.html?id=${lastLineC}">Go to Page Accueil-C.html</a>`);
+//   $row.append($linkCell);
+
+//   // Append the row to the table body
+//   $("#myTable tbody").append($row);
+
+  // // Create a new row for the second text
+  // $row = $("<tr></tr>");
+
+  // // Create a new cell for the second text and add it to the row
+  // $textCell = $("<td></td>");
+  // $textCell.text(lastLineC2.trim());
+  // $row.append($textCell);
+
+  // // Create a new cell for the second link and add it to the row
+  // $linkCell = $("<td></td>");
+  // $linkCell.append(`<a href="src/Site1/Accueil.html?id=${lastLineC2}">Go to Page Accueil-C.html</a>`);
+  // $row.append($linkCell);
+
+  // // Append the row to the table body
+  // $("#myTable tbody").append($row);
+
+
+
+
+
+  //           // Create a new element to hold the text for this image
+  // var $textElement = $("<div></div>");
+  // $textElement.append(`<p>${lastLineC.trim()}</p>`);
+
+  // // Add the new element to the #texts container
+  // $("#texts").append($textElement);
+
+  // // Create a new element to hold the link to the image page
+  // var $linkElement = $("<div></div>");
+  // $linkElement.append(`<a href="src/Site1/Accueil.html?id=${lastLineC}">Go to Page Accueil-C.html</a>`);
+  
+  // // Add the new elements to the #variable container
+  // $("#variable").append($textElement);
+  // $("#variable").append($linkElement);
+
+
+
+
+
+            // Create a new element to hold the text for this image
+  // var $textElement = $("<div></div>");
+  // $textElement.append(`<p>${lastLineC.trim()}</p>`);
+
+  // // Create a new element to hold the link to the image page
+  // var $linkElement = $("<div></div>");
+  // $linkElement.append(`<a href="src/Site1/Accueil.html?id=${lastLineC}">Go to Page Accueil-C.html</a>`);
+  
+  //   // Add the new elements to the #variable container
+  //   $("#variable").empty();
+  // $("#variable").append($textElement);
+  // $("#variable").append($linkElement);
+
+  // // Create a new element to hold the text for this image
+  // var $textElement = $("<div></div>");
+  // $textElement.append(`<p>${lastLineC.trim()}</p>`);
+
+  // // Add the new element to the #texts container
+  // $("#texts").append($textElement);
+
+          
+          // $("#texts").text(lastLineC);
+
+          // // $("#texts").empty();
+
+          // // Add the paragraph containing the current line and button to show images
+          // $("#texts").append(
+          //   `<p>${lastLineC.trim()}</p>`
+
+          // )
+
+         }
+      }
+      // Call this function again after a short delay to check for new images
+      setTimeout(checkForNewImages, 1000);
+    }
+  })
+
+
+  $.ajax({
+    url: "http://127.0.0.1:5500/ListFilenameOrdonnance.txt",
+     success: function(data) {
+     // some code here 
+            // Select the target element
+          // var button = document.getElementsByClassName("showImages");
+          
+      // Split the contents of the file into separate lines
+      var lines = data.split("\n");
+      
+      // Get the last line (which should contain the path of the most recently added image)
+      let addedFilenames = JSON.parse(localStorage.getItem("addedFilenames")) || [];
+      let imageOrder = JSON.parse(localStorage.getItem("imageOrder")) || [];
+      var lastLineO = lines[lines.length - 2];
+      // Check if the last image has already been added
+      if (!addedFilenames.includes(lastLineO)) {
+        // Add the last image to the added filenames list
+        addedFilenames.push(lastLineO);
+        imageOrder.push(lastLineO);
+        // Store the updated list of added filenames and image order in local storage
+        localStorage.setItem("addedFilenames", JSON.stringify(addedFilenames));
+        localStorage.setItem("imageOrder", JSON.stringify(imageOrder));
+
+        // Only add the image container if the last line is not empty (i.e., if a new image has been added)
+        console.log(lastLineO.trim());
+        if (lastLineO.trim().length > 0) {
+          // Sort the images based on the order they were added
+          imageOrder.sort(function(a, b) {
+            return addedFilenames.indexOf(a) - addedFilenames.indexOf(b);
+          });
+          // $("#variable2").text(lastLineO);
+          $("#variable2").empty();
+          $("#variable2").append( `
+          <a href="src/Site1/Accueil.html?id=${lastLineO}">Go to Page Accueil-O.html</a>`)
+          // var url = `src/Site1/Accueil.html?${lastLineO}=` + encodeURIComponent(lastLineO);
+          // window.location.href = url;
+         
+          var $textElement = $("<div></div>");
+  $textElement.append(`<p>${lastLineC.trim()}</p>`);
+
+  // Add the new element to the #texts container
+  $("#texts2").append($textElement);
+
+          
+          // $("#texts2").text(lastLineO);
+
+          // // $("#texts").empty();
+
+          // // Add the paragraph containing the current line and button to show images
+          // $("#texts2").append(
+          //   `<a>${lastLineO.trim()}</a>`
+
+          // )
+
+         }
+      }
+      // Call this function again after a short delay to check for new images
+      // setTimeout(checkForNewImages, 10000);
+    }
+  })
+      }
+// Initialize the page by loading any previously added images from local storage
+$(document).ready(function() {
+  let addedFilenames = JSON.parse(localStorage.getItem("addedFilenames")) || [];
+  for (let i = 0; i < addedFilenames.length; i++) {
+    $("#variable2").prepend(
+      `<p id="variable2"></p>
+     `
+    );
+
+    $("#variable").prepend(
+      `<p id="variable"></p>
+     `
+    );
+  }
+
+  // checkForNewImages();
+setTimeout(checkForNewImages, 1000);
+})
+  // checkForNewImages();
+    </script>
+
+<script>
+
+</script>
+  </body>
+</html>

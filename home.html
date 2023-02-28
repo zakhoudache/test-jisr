@@ -1,0 +1,751 @@
+ <!DOCTYPE html>
+<html>
+<head>
+
+<style>
+#table-container {
+  width: 100%;
+  margin: 0 auto;
+  padding: 20px;
+  font-family: sans-serif;
+}
+
+table {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+thead tr {
+  background-color: #1abc9c;
+  color: #fff;
+  text-align: left;
+}
+
+th,
+td {
+  padding: 12px 15px;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+}
+
+tbody tr:nth-child(even) {
+  background-color: #f2f2f2;
+}
+
+a {
+  text-decoration: none;
+  color: #1abc9c;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+</style>  
+    <title>My Table</title>
+</head>
+<!--  -->
+<body>
+  <div id="table-container"></div>
+
+<p id="texts"></p>
+<!-- <p id="texts2"></p> -->
+<a id="variable"></a>
+<!-- <a id="variable2"></a> -->
+<!-- <button id="showImages">Show Images</button> -->
+     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+      
+
+     
+  
+    <script>
+
+
+$(document).ready(function() {
+  let $table = $("<table></table>");
+  function createTableRow(filenameC,filenameO, $linkCellChifa, $linkCellOrdonnance, $linkCellChifa_Ord) {
+
+
+  // Load any previously added images from local storage
+  // let addedFilenamesC = JSON.parse(localStorage.getItem("addedFilenamesC")) || [];
+  // let addedFilenamesO = JSON.parse(localStorage.getItem("addedFilenamesO")) || [];
+  // let imageOrder = JSON.parse(localStorage.getItem("imageOrder")) || [];
+
+  // Iterate through each image and add it to the table
+  // for (let i = 0; i < addedFilenamesC.length; i++) {
+    
+
+    // Create the table row
+    let $row = $("<tr></tr>");
+
+    let $filenameCCell_OCell = $("<td></td>").text(filenameC+filenameO);
+    $row.append($filenameCCell_OCell);
+    // let filenameO = $("<td></td>");;
+    // Add the filename to the table
+    // let $textC = $("<td></td>").text($textCell);
+    // $row.append($textC);
+
+    // Add the links to the table
+    let linkUrlC = `src/Site1/Accueil.html?linkUrlC=\\${filenameC}`;
+    let $linkC_Chifa = $("<td></td>").html(`<a href="${linkUrlC}">Go to Page Accueil-C.html</a>`);
+    $row.append($linkC_Chifa);
+
+    let linkUrlO = `src/Site1/Accueil.html?linkUrlO=\\${filenameO}`;
+    let $linkC_Ordonnance = $("<td></td>").html(`<a href="${linkUrlO}">Go to Page Accueil-O.html</a>`);
+    $row.append($linkC_Ordonnance);
+    // let linkUrl_C_O = `\\src\\Site1\\Accueil.html?linkUrlC=${imageOrder[i]}&linkUrlO=${imageOrder[i+1]}`;
+
+    let linkUrl_C_O = `src/Site1/Accueil.html?linkUrlC=\\${filenameC}&linkUrlO=\\${filenameO}`;
+    let $linkC_Chifa_Ord = $("<td></td>").html(`<a href="${linkUrl_C_O}">Go to Page Accueil-C-O.html</a>`);
+    $row.append($linkC_Chifa_Ord);
+
+    // Add the row to the table
+    // $table.prepend($row);
+  // }
+
+  return $row;
+
+  }
+  // Append the table to the page
+  // $("#table-container").append($table);
+  function loadTextFile() {
+   let ajax1 = $.get("http://127.0.0.1:5500/ListFilename.txt");
+let ajax2 = $.get("http://127.0.0.1:5500/ListFilenameOrdonnance.txt");
+
+// let $table = $("<table></table>");
+
+// Use .when() to wait for both AJAX requests to complete
+$.when(ajax1, ajax2).done(function(response1, response2) {
+  // let addedFilenamesC = JSON.parse(localStorage.getItem("addedFilenamesC")) || [];
+  // let addedFilenamesO = JSON.parse(localStorage.getItem("addedFilenamesO")) || [];
+
+  // Get the last line from each response
+  let lastLineC = response1[0].split("\n");
+  let lastLineO = response2[0].split("\n");
+  console.log(lastLineC)
+  for  (let i = 0; i <lastLineC.length; i++) {
+    // Add the last image to the added filenames list
+    const filenameC = lastLineC[i];
+    const filenameO = lastLineO[i];
+
+    // addedFilenamesC.push(lastLineC);
+    // addedFilenamesO.push(lastLineO);
+
+    // localStorage.setItem("addedFilenamesC", JSON.stringify(addedFilenamesC));
+    // localStorage.setItem("addedFilenamesO", JSON.stringify(addedFilenamesO));
+
+    let $tableRow = $("<tr></tr>");
+    let $textCell = $("<td></td>").text(filenameC + filenameO);
+    let linkUrlC = `src/Site1/Accueil.html?linkUrlC=${filenameC}`;
+    let $linkCellChifa = $("<td></td>").html(`<a href="${linkUrlC}">Go to Page Accueil-C.html</a>`);
+    let linkUrlO = `src/Site1/Accueil.html?linkUrlO=${filenameO}`;
+    let $linkCellOrdonnance = $("<td></td>").html(`<a href="${linkUrlO}">Go to Page Accueil-O.html</a>`);
+    let linkUrl_C_O = `src/Site1/Accueil.html?linkUrlC=${filenameC}&linkUrlO=${filenameO}`;
+
+    
+
+    let $linkCellChifa_Ord = $("<td></td>").html(`<a href="${linkUrl_C_O}">Go to Page Accueil-C-O.html</a>`);
+    $row =createTableRow(filenameC,filenameO, $linkCellChifa, $linkCellOrdonnance, $linkCellChifa_Ord);
+    // $tableRow.createTableRow($textCell, $linkCellChifa, $linkCellOrdonnance, $linkCellChifa_Ord);
+    $table.find("tbody").prepend($row);
+    $table.find("tbody").prepend($row);
+
+
+    // Store the updated list of added filenames and image order in local storage
+    let imageOrder = [];
+    for (let i = 0; i < filenameC.length; i++) {
+      imageOrder.push(filenameC[i]);
+      imageOrder.push(filenameO[i]);
+
+    }
+  //   localStorage.setItem("imageOrder", JSON.stringify(imageOrder));
+  // } else {
+  //   let imageOrder = JSON.parse(localStorage.getItem("imageOrder")) || [];
+  //   let $tableRows = $table.find("tr");
+  //   for (let i = 0; i < imageOrder.length; i += 2) {
+  //     let indexC = addedFilenamesC.indexOf(imageOrder[i]);
+  //     let indexO = addedFilenamesO.indexOf(imageOrder[i+1]);
+  //     if (indexC >= 0 && indexO >= 0) {
+  //       let $tableRow = $tableRows.eq(indexC);
+  //       let $textCell = $tableRow.find("td").eq(0);
+  //       let $linkCellChifa = $tableRow.find("td").eq(1).find("a");
+  //       let $linkCellOrdonnance = $tableRow.find("td").eq(2).find("a");
+  //       let $linkCellChifa_Ord = $tableRow.find("td").eq(3).find("a");
+  //       let linkUrlC = `\\src\\Site1\\Accueil.html" + "?linkUrlC=" +${'\\'+imageOrder[i]}`;        console.log("io "+ '\\'+imageOrder[i]);
+
+
+
+  //       let linkUrlO = `\\src\\Site1\\Accueil.html" + "?linkUrlO=" +${'\\'+imageOrder[i+1]}`;
+
+
+  //       let linkUrl_C_O = `\\src\\Site1\\Accueil.html?linkUrlC=${imageOrder[i]}&linkUrlO=${imageOrder[i+1]}`;
+  //       $textCell.text(imageOrder[i] + imageOrder[i+1]);
+  //       $linkCellChifa.attr("href", linkUrlC);
+  //       $linkCellOrdonnance.attr("href", linkUrlO);
+  //       $linkCellChifa_Ord.attr("href", linkUrl_C_O);
+  //       $tableRow.appendTo($table.find("tbody"));
+  //     } else {
+  //       // RemoII²ve the missing entry from the image order list
+  //       imageOrder.splice(i, 2);
+  //       localStorage.setItem("imageOrder", JSON.stringify(imageOrder));
+  //     }
+
+  //   }
+  // }
+  }
+});
+
+$table.append("<thead><tr><th>Image Paths</th><th>Go Chifa</th><th>Go Ordonnance</th><th>Go Chifa-Ordonnance</th></tr></thead>");
+$table.append("<tbody></tbody>");
+$("body").append($table);
+
+  }
+// Append the table to the HTML body
+
+loadTextFile();
+
+
+
+
+
+  })
+
+
+  
+      
+// Initialize the page by loading any previously added images from local storage
+$(document).ready(function() {
+  const addedFilenamesC = JSON.parse(localStorage.getItem("addedFilenamesC")) || [];
+  const addedFilenamesO = JSON.parse(localStorage.getItem("addedFilenamesO")) || [];
+  const tableData = JSON.parse(localStorage.getItem("tableData"));
+
+  const $table = $("<table></table>");
+  for (let i = 0; i < addedFilenamesC.length; i++) {
+    const rowDataC = addedFilenamesC[i];
+    const rowDataO = addedFilenamesO[i+1];
+    const $tableRow = $("<tr></tr>");
+    const $textCell = $("<td></td>").text(rowDataC + rowDataO);
+    const $linkCellChifa = $("<td></td>").html(`<a href="src/Site1/Accueil.html?id=${rowDataC}">Go to Page Accueil-C.html</a>`);
+    const $linkCellOrdonnance = $("<td></td>").html(`<a href="src/Site1/Accueil.html?id=${rowDataO}">Go to Page Accueil-O.html</a>`);
+    const $linkCellChifa_Ord = $("<td></td>").html(`<a href="src/Site1/Accueil.html?id=${rowDataO}-${rowDataC}">Go to Page Accueil-C-O.html</a>`);
+    // $tableRow.prepend($textCell, $linkCellChifa, $linkCellOrdonnance, $linkCellChifa_Ord);
+    $table.append($tableRow);
+
+
+  }
+  $("body").append($table);
+});
+
+
+// let $table = $("<table></table>");
+// let $tableBody = $("<tbody></tbody>");
+// $table.append($tableBody);
+// $table.attr("id", "myTable");
+// $(document).ready(function() {
+
+// // Load the Google Sheets API library
+
+// // Open the database
+// let dbName = "myDatabase";
+// let objectStoreName = "images";
+// let request = window.indexedDB.open(dbName, 1);
+
+// request.onupgradeneeded = function(event) {
+//   let db = event.target.result;
+//   let objectStore = db.createObjectStore(objectStoreName, { autoIncrement: true });
+// };
+
+// request.onerror = function() {
+//   console.log("Error opening the database");
+// };
+
+// const db = event.target.result;
+// const transaction = db.transaction(objectStoreName, "readonly");
+// const objectStore = transaction.objectStore(objectStoreName);
+
+// // Get all the data from the object store
+// objectStore.getAll().then(data => {
+//   const addedFilenamesC = data.map(image => image.filenameC);
+//   const addedFilenamesO = data.map(image => image.filenameO);
+//   const imageOrder = data.map(image => image.imageOrder);
+
+//   // Add the data to the table
+//   data.forEach(image => {
+//     const row = createTableRow(image);
+//     $table.append(row);
+//   });
+
+//   // Listen for new data added to the object store and add it to the table
+//   transaction.addEventListener("add", () => {
+//     objectStore.openCursor(null, "prev").onsuccess = event => {
+//       const cursor = event.target.result;
+//       if (cursor) {
+//         const imageData = cursor.value;
+//         const row = createTableRow(imageData);
+//         $table.append(row);
+//         cursor.continue();
+//       }
+//     };
+//   });
+// });
+
+
+
+// // Define a function to create a table row for the given image data
+// function createTableRow(image) {
+//   let filenameC = image.filenameC;
+//   let filenameO = image.filenameO;
+//   let imageOrder = image.imageOrder;
+
+//   // Create the table row and add the data-image-order attribute
+//   let $row = $("<tr></tr>").attr("data-image-order", imageOrder);
+
+//   // Add the filename cells to the row
+//   let $filenameC = $("<td></td>").addClass("filename-cell-c").text(filenameC);
+//   $row.append($filenameC);
+
+//   let $filenameO = $("<td></td>").addClass("filename-cell-o").text(filenameO);
+//   $row.append($filenameO);
+
+//   // Add the links to the table
+//   let linkUrlC = `src/Site1/Accueil.html?linkUrlC=${encodeURIComponent(filenameC)}`;
+//   let $linkCellChifa = $("<td></td>").html(`<a href="${linkUrlC}">Go to Page Accueil-C.html</a>`);
+//   $row.append($linkCellChifa);
+
+//   let linkUrlO = `src/Site1/Accueil.html?linkUrlO=${encodeURIComponent(filenameO)}`;
+ 
+//   let $linkCellOrdonnance = $("<td></td>").html(`<a href="${linkUrlO}">Go to Page Accueil-O.html</a>`);
+//   $row.append($linkCellOrdonnance);
+
+//   let linkUrl_C_O = `src/Site1/Accueil.html?linkUrlC=\\\\${filenameC}&linkUrlO=\\\\${filenameO}`;
+
+//   // let linkUrl_C_O = `src/Site1/Accueil.html?linkUrlC=\\${filenameC}&linkUrlO=\\${filenameO}`;
+//   let $linkCellChifa_Ord = $("<td></td>").html(`<a href="${linkUrl_C_O}">Go to Page Accueil-C-O.html</a>`);
+//   $row.append($linkCellChifa_Ord);
+
+//   return $row;
+   
+
+// }
+
+// function updateTable() {
+//   const table = $("#myTable");
+//   const existingFilenames = table.find('tr:gt(0)').map(function() {
+//     return $(this).find('td:first-child a').text();
+//   }).get();
+
+//   const imageOrder = getObjectStoreData("imageOrder");
+//   const addedFilenames = [];
+//   for (let i = 0; i < imageOrder.length; i++) {
+//     const filename = imageOrder[i];
+//     if (!existingFilenames.includes(filename)) {
+//       addedFilenames.push(filename);
+//       const html = createTableRow(filename);
+//       table.append(html);
+//     }
+//   }
+//   if (addedFilenames.length > 0) {
+//     const lastFilename = addedFilenames[addedFilenames.length - 1];
+//     if (lastFilename.includes("ListFilename")) {
+//       setObjectStoreData(lastFilename.includes("Ordonnance") ? "addedFilenamesO" : "addedFilenamesC", lastFilename);
+//     }
+//     setObjectStoreData("imageOrder", imageOrder);
+//   }
+// }
+
+
+
+
+// });
+//   let ajax1 = $.get("http://127.0.0.1:5500/ListFilename.txt");
+// let ajax2 = $.get("http://127.0.0.1:5500/ListFilenameOrdonnance.txt");
+
+// $.when(ajax1, ajax2).done(function(response1, response2) {
+//   let dbName = "myDatabase";
+//   let objectStoreName = "images";
+
+//   const addedFilenamesO = [];
+//   const addedFilenamesC = [];
+
+//   // Open a connection to the IndexedDB database
+//   const request = indexedDB.open(dbName, 1);
+
+//   // Handle errors
+//   request.onerror = (event) => {
+//     console.error("Database error:", event.target.error);
+//   };
+
+//   // Handle success
+//   request.onsuccess = (event) => {
+//     const db = event.target.result;
+
+//     // Retrieve the data from the object store
+//     const transaction = db.transaction(objectStoreName, "readonly");
+//     const objectStore = transaction.objectStore(objectStoreName);
+
+//     const getCData = objectStore.get("addedFilenamesC");
+//     const getOData = objectStore.get("addedFilenamesO");
+
+//     getCData.onsuccess = (event) => {
+//      let addedFilenamesC = event.target.result || [];
+//       // Do something with addedFilenamesC
+//     };
+
+//     getOData.onsuccess = (event) => {
+//      let  addedFilenamesO = event.target.result || [];
+//       // Do something with addedFilenamesO
+//     };
+
+//     // Get the last line from each response
+//     let lastLineC = response1[0].split("\n").slice(-2, -1)[0];
+//     let lastLineO = response2[0].split("\n").slice(-2, -1)[0];
+
+//     if (!addedFilenamesC.includes(lastLineC) || !addedFilenamesO.includes(lastLineO)) {
+//       // Add the last image to the added filenames list
+//       addedFilenamesC.push(lastLineC);
+//       addedFilenamesO.push(lastLineO);
+
+//       // Save the updated data to the object store
+//       const updateTransaction = db.transaction(objectStoreName, "readwrite");
+//       const updateObjectStore = updateTransaction.objectStore(objectStoreName);
+
+//       updateObjectStore.put({ "addedFilenamesC":addedFilenamesC});
+//       updateObjectStore.put({ "addedFilenamesO":addedFilenamesO});
+
+
+//     let $tableRow = $("<tr></tr>");
+//     let $textCell = $("<td></td>").text(lastLineC + lastLineO);
+//     let linkUrlC = `src/Site1/Accueil.html?linkUrlC=\\${lastLineC}`;
+//     let $linkCellChifa = $("<td></td>").html(`<a href="${linkUrlC}">Go to Page Accueil-C.html</a>`);
+//     let linkUrlO = `src/Site1/Accueil.html?linkUrlO=\\${lastLineO}`;
+//     let $linkCellOrdonnance = $("<td></td>").html(`<a href="${linkUrlO}">Go to Page Accueil-O.html</a>`);
+//     let linkUrl_C_O = `src/Site1/Accueil.html?linkUrlC=\\${lastLineC}&linkUrlO=\\${lastLineO}`;
+
+    
+
+//     let $linkCellChifa_Ord = $("<td></td>").html(`<a href="${linkUrl_C_O}">Go to Page Accueil-C-O.html</a>`);
+//     $tableRow.append($textCell, $linkCellChifa, $linkCellOrdonnance, $linkCellChifa_Ord);
+//     $table.find("tbody").append($tableRow);
+//     // $table.find("tbody").prepend($tableRow);
+
+
+//     // Store the updated list of added filenames and image order in local storage
+//     let imageOrder = [];
+//     for (let i = 0; i < addedFilenamesC.length; i++) {
+//       imageOrder.push(addedFilenamesC[i]);
+//       imageOrder.push(addedFilenamesO[i]);
+
+//     }
+//     updateObjectStore.put({ "imageOrder":imageOrder});
+//     // properties.setProperty("imageOrder", JSON.stringify(imageOrder));
+
+//     // localStorage.setItem("imageOrder", JSON.stringify(imageOrder));
+//   } else {
+//     getCData.onsuccess = (event) => {
+//       let imageOrder =  event.target.result || [];
+//       // Do something with addedFilenamesC
+//     };
+//     // let imageOrder = JSON.parse(properties.getProperty("imageOrder")) || [];
+//     // JSON.parse(localStorage.getItem("imageOrder")) || [];
+//     let $tableRows = $table.find("tr");
+//     for (let i = 0; i < imageOrder.length; i += 2) {
+//       let indexC = addedFilenamesC.indexOf(imageOrder[i]);
+//       let indexO = addedFilenamesO.indexOf(imageOrder[i+1]);
+//       if (indexC >= 0 && indexO >= 0) {
+//         let $tableRow = $tableRows.eq(indexC);
+//         let $textCell = $tableRow.find("td").eq(0);
+//         let $linkCellChifa = $tableRow.find("td").eq(1).find("a");
+//         let $linkCellOrdonnance = $tableRow.find("td").eq(2).find("a");
+//         let $linkCellChifa_Ord = $tableRow.find("td").eq(3).find("a");
+//         let linkUrlC = `\\src\\Site1\\Accueil.html" + "?linkUrlC=" +${'\\'+imageOrder[i]}`;        console.log("io "+ '\\'+imageOrder[i]);
+
+// // window.location.href = "src\\Site1\\Accueil.html" +
+// //           "?linkUrlC=" + linkUrlC;
+
+//         let linkUrlO = `\\src\\Site1\\Accueil.html" + "?linkUrlO=" +${'\\'+imageOrder[i+1]}`;
+
+
+//         // let url = "src\\Site1\\Accueil.html" +
+//         //   "?linkUrlC=" + encodeURIComponent(linkUrlC);
+
+//           // let url = "src\\Site1\\Accueil.html" +
+//           // "?linkUrlC=" + encodeURIComponent('\\'+linkUrlC) +
+//           // "&linkUrlO=" + encodeURIComponent(linkUrlO);
+//           // console.log("url is : ",url);
+
+// // Redirect to the URL
+// // window.location.href = url; src\Site1\Accueil.html
+//         // window.location.href = "Accueil.html?linkUrlC=" + encodeURIComponent(linkUrlC) + "&linkUrlO=" + encodeURIComponent(linkUrlO);
+//         let linkUrl_C_O = `\\src\\Site1\\Accueil.html?linkUrlC=${imageOrder[i]}&linkUrlO=${imageOrder[i+1]}`;
+//         $textCell.text(imageOrder[i] + imageOrder[i+1]);
+//         $linkCellChifa.attr("href", linkUrlC);
+//         $linkCellOrdonnance.attr("href", linkUrlO);
+//         $linkCellChifa_Ord.attr("href", linkUrl_C_O);
+//         $tableRow.appendTo($table.find("tbody"));
+//       } else {
+//         // RemoII²ve the missing entry from the image order list
+//         imageOrder.splice(i, 2);
+//         updateObjectStore.put(imageOrder, "imageOrder");
+//         // properties.setProperty("imageOrder", JSON.stringify(imageOrder));
+//         // localStorage.setItem("imageOrder", JSON.stringify(imageOrder));
+//       }
+
+//     }
+//   }
+//   transaction.oncomplete = () => {
+//     db.close();
+//   };
+// };
+
+
+
+// // Append the table to the HTML body
+// $table.append("<thead><tr><th>Image Paths</th><th>Go Chifa</th><th>Go Ordonnance</th><th>Go Chifa-Ordonnance</th></tr></thead>");
+// $table.append("<tbody></tbody>");
+// $("body").append($table);
+
+// });
+
+  
+      
+// // Initialize the page by loading any previously added images from local storage
+// $(document).ready(function() {
+
+  
+//   // const addedFilenamesO = [];
+//   // const addedFilenamesC = [];
+//   // const tableData = [];
+//   const request = indexedDB.open("myDatabase", 1);
+
+//   // Handle errors
+//   request.onerror = (event) => {
+//     console.error("Database error:", event.target.error);
+//   };
+
+//   // Handle success
+//   request.onsuccess = (event) => {
+//     const db = event.target.result;
+
+//     // Retrieve the data from the object store
+//     const transaction = db.transaction("images", "readonly");
+//     const objectStore = transaction.objectStore("images");
+
+//     const getCData = objectStore.get("addedFilenamesC");
+//     const getOData = objectStore.get("addedFilenamesO");
+
+//     getCData.onsuccess = (event) => {
+//      let addedFilenamesC = event.target.result || [];
+//       // Do something with addedFilenamesC
+
+//       let  addedFilenamesO = event.target.result || [];
+//       // Do something with addedFilenamesO
+
+//       let  tableData = event.target.result || [];
+//       // Do something with addedFilenamesO    
+      
+      
+      
+//   const $table = $("<table></table>");
+//   for (let i = 0; i < addedFilenamesC.length; i++) {
+//     const rowDataC = addedFilenamesC[i];
+//     const rowDataO = addedFilenamesO[i+1];
+//     const $tableRow = $("<tr></tr>");
+//     const $textCell = $("<td></td>").text(rowDataC + rowDataO);
+//     const $linkCellChifa = $("<td></td>").html(`<a href="src/Site1/Accueil.html?id=${rowDataC}">Go to Page Accueil-C.html</a>`);
+//     const $linkCellOrdonnance = $("<td></td>").html(`<a href="src/Site1/Accueil.html?id=${rowDataO}">Go to Page Accueil-O.html</a>`);
+//     const $linkCellChifa_Ord = $("<td></td>").html(`<a href="src/Site1/Accueil.html?id=${rowDataO}-${rowDataC}">Go to Page Accueil-C-O.html</a>`);
+//     // $tableRow.prepend($textCell, $linkCellChifa, $linkCellOrdonnance, $linkCellChifa_Ord);
+//     $table.append($tableRow);
+
+
+// //     $table.find("tbody tr").sort(function(a, b) {
+// //   let filenameA = $(a).find("td:first").text();
+// //   let filenameB = $(b).find("td:first").text();
+// //   return filenameA.localeCompare(filenameB);
+// // }).appendTo($table.find("tbody"));
+
+//   }
+//   $("body").append($table);
+//     };
+
+//     // getOData.onsuccess = (event) => {
+//     //  let  addedFilenamesO = event.target.result || [];
+//     //   // Do something with addedFilenamesO
+//     // };
+
+
+//     // getOData.onsuccess = (event) => {
+//     //  let  tableData = event.target.result || [];
+//     //   // Do something with addedFilenamesO
+//     // };
+
+//   }
+
+
+
+
+
+
+
+// })
+
+
+// const dbName = "myDatabase";
+// const objectStoreName = "images";
+
+// // Open a connection to the IndexedDB database
+// const request = indexedDB.open(dbName, 1);
+
+// // Handle errors
+// request.onerror = (event) => {
+//   console.error("Database error:", event.target.error);
+// };
+
+// // Handle upgrade (create object store)
+// request.onupgradeneeded = (event) => {
+//   const db = event.target.result;
+//   db.createObjectStore(objectStoreName, { autoIncrement: true });
+// };
+
+// // Handle success
+// request.onsuccess = (event) => {
+//   const db = event.target.result;
+
+//   // Start a new transaction
+//   const transaction = db.transaction(objectStoreName, "readonly");
+
+//   // Get the object store for the images
+//   const objectStore = transaction.objectStore(objectStoreName);
+
+//   // Get the values from the object store
+//   const getRequest = objectStore.getAll();
+
+//   getRequest.onsuccess = () => {
+//     const addedFilenamesC = [];
+//     const addedFilenamesO = [];
+//     const imageOrder = [];
+
+//     // Iterate through each image and add it to the table
+//     getRequest.result.forEach((image) => {
+//       addedFilenamesC.push(image.filenameC);
+//       addedFilenamesO.push(image.filenameO);
+//       imageOrder.push(image.imageOrder);
+//     });
+
+//     // Create table HTML
+//     let tableHtml = "";
+//     for (let i = 0; i < addedFilenamesC.length; i++) {
+//       const filenameC = addedFilenamesC[i];
+//       const filenameO = addedFilenamesO[i];
+//       const linkUrlC = `src/Site1/Accueil.html?linkUrlC=\\${filenameC}`;
+//       const linkUrlO = `src/Site1/Accueil.html?linkUrlO=\\${filenameO}`;
+//       const linkUrl_C_O = `src/Site1/Accueil.html?linkUrlC=\\${filenameC}&linkUrlO=\\${filenameO}`;
+
+//       tableHtml += `<tr>
+//                       <td>${filenameC + filenameO}</td>
+//                       <td><a href="${linkUrlC}">Go to Page Accueil-C.html</a></td>
+//                       <td><a href="${linkUrlO}">Go to Page Accueil-O.html</a></td>
+//                       <td><a href="${linkUrl_C_O}">Go to Page Accueil-C-O.html</a></td>
+//                     </tr>`;
+//     }
+
+//     // Write table HTML to file
+//     const blob = new Blob([tableHtml], { type: "text/html" });
+//     const url = URL.createObjectURL(blob);
+//     const a = document.createElement("a");
+//     a.href = url;
+//     a.download = "table.html";
+//     document.body.appendChild(a);
+//     a.click();
+//     document.body.removeChild(a);
+
+//     // Write addedFilenamesC to file
+//     const addedFilenamesCBlob = new Blob([JSON.stringify(addedFilenamesC)], { type: "application/json" });
+//     const addedFilenamesCUrl = URL.createObjectURL(addedFilenamesCBlob);
+//     const addedFilenamesCA = document.createElement("a");
+//     addedFilenamesCA.href = addedFilenamesCUrl;
+//     addedFilenamesCA.download = "addedFilenames.json";
+// document.body.appendChild(addedFilenamesCA);
+// addedFilenamesCA.click();
+// document.body.removeChild(addedFilenamesCA);
+// }
+
+// // Function to update the list of added files in the HTML page
+// function updateAddedFilesList() {
+// const addedFilesList = document.getElementById("added-files-list");
+// addedFilesList.innerHTML = ""; // clear the list
+
+
+// for (let i = 0; i < addedFilenames.length; i++) {
+//   const filename = addedFilenames[i];
+//   const li = document.createElement("li");
+//   li.textContent = filename;
+//   addedFilesList.appendChild(li);
+// }
+// }
+
+// // Event listener for the file input field
+// const fileInput = document.getElementById("file-input");
+// fileInput.addEventListener("change", handleFileInputChange);
+
+// // Event listener for the add button
+// const addButton = document.getElementById("add-button");
+// addButton.addEventListener("click", handleAddButtonClick);
+
+// // Event listener for the save button
+// const saveButton = document.getElementById("save-button");
+// saveButton.addEventListener("click", handleSaveButtonClick);
+
+ 
+// // Define a function to handle errors
+// function errorHandler(error) {
+// console.error("Error: ", error);
+// }
+
+// // Define a function to handle success
+// function successHandler() {
+// console.log("Success");
+// }
+
+// // Define a function to remove an object store
+// function removeStore(db, storeName) {
+// db.close();
+
+// const request = indexedDB.open(db.name, db.version + 1);
+
+// request.onupgradeneeded = (event) => {
+// const db = event.target.result;
+// db.deleteObjectStore(storeName);
+// };
+
+// request.onsuccess = (event) => {
+// const db = event.target.result;
+// db.close();
+// };
+// }
+
+// // Define a function to remove the images object store
+// function removeImagesStore() {
+// const dbName = "myDatabase";
+// const storeName = "images";
+
+// const request = indexedDB.open(dbName);
+
+// request.onsuccess = (event) => {
+// const db = event.target.result;
+// removeStore(db, storeName);
+// };
+// }
+
+// // Call the removeImagesStore function
+// removeImagesStore();
+
+// }
+
+// )
+
+    </script>
+
+
+  </body>
+</html>
