@@ -187,15 +187,15 @@ app.post('/ordonnance', async (req, res, next) => {
     });
 });
 
-const admin = require('firebase-admin');
+// const admin = require('firebase-admin');
 
-  // Initialize Firebase
-  const serviceAccount = require('C:\\Users\\MCS\\OneDrive\\Desktop\\Jisr pharmacy\\firstprojectt-2c1de-firebase-adminsdk-c2kai-5df1d0560e.json');
+//   // Initialize Firebase
+//   const serviceAccount = require('C:\\Users\\MCS\\OneDrive\\Desktop\\Jisr pharmacy\\firstprojectt-2c1de-firebase-adminsdk-c2kai-5df1d0560e.json');
   
-  admin.initializeApp({
-    credential: admin.credential.cert(serviceAccount),
-    databaseURL: 'https://firstprojectt-2c1de-default-rtdb.firebaseio.com'
-  });
+//   admin.initializeApp({
+//     credential: admin.credential.cert(serviceAccount),
+//     databaseURL: 'https://firstprojectt-2c1de-default-rtdb.firebaseio.com'
+//   });
   
 app.post('/Postaddr',async (req, res, next) => {
   let Adr = req.body.Adr;
@@ -221,21 +221,21 @@ app.post('/Postaddr',async (req, res, next) => {
   res.end(`lets send ${message.custom_payload.message}`);
   
 
-  // Store the message sent by the first Chatfuel chatbot in Firebase
-  admin.database().ref('messages').set({
-    message: message
-  });
+  // // Store the message sent by the first Chatfuel chatbot in Firebase
+  // admin.database().ref('messages').set({
+  //   message: message
+  // });
   
-  // Retrieve the stored message in your webhook
-  admin.database().ref('messages').once('value')
-    .then((snapshot) => {
-      const message = snapshot.val().message;
-      console.log(message);
-      // Use the message in your webhook logic to trigger the desired action
-    })
-    .catch((error) => {
-      console.error(error);
-    });
+  // // Retrieve the stored message in your webhook
+  // admin.database().ref('messages').once('value')
+  //   .then((snapshot) => {
+  //     const message = snapshot.val().message;
+  //     console.log(message);
+  //     // Use the message in your webhook logic to trigger the desired action
+  //   })
+  //   .catch((error) => {
+  //     console.error(error);
+  //   });
   
   // Define the URL for the receiving chatbot's JSON API
   const url = `https://api.chatfuel.com/bots/63f49b619557a962ef4bfc7b/users/${message.chatfuel_user_id}/send?chatfuel_token=${message.chatfuel_token}&chatfuel_block_id=${message.chatfuel_block_id}`;
