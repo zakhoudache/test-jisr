@@ -133,6 +133,10 @@ app.post('/chifa', async (req, res, next) => {
     });
 });
 
+app.use("/", (req, res) => {
+  res.send("fffffffffffffffff")
+})
+
 
 app.post('/ordonnance', async (req, res, next) => {
   let fileName = req.body.fileName;
@@ -186,6 +190,7 @@ app.post('/ordonnance', async (req, res, next) => {
       res.data.pipe(fs.createWriteStream(imagePath));
     });
 });
+
 
 // const admin = require('firebase-admin');
 
