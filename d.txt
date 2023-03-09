@@ -1,7 +1,0 @@
- {
-    "chatfuel_token": "HAEZnzGAbTVZeN8RYbFodOdq3cFYBBmb6eFc34SnStOPonQcmk5brpWhgvNhaWgg",
-    "chatfuel_message_tag": "CHATFUEL_MESSAGE_TAG",
-    "chatfuel_block_id": "63f4f7841d0ea92711afe86b",
-    "chatfuel_user_id": "6155861414436575",
-    "custom_payload": { message: adresse }
-  }

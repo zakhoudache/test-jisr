@@ -1,29 +1,58 @@
 const express = require("express");
-const hostname = "127.0.0.1";
+// const hostname = "127.0.0.1";
 const session = require('express-session');
 const app = express();
 const path = require("path");
 const fs = require("fs");
 const axios = require("axios");
 const { spawn } = require('child_process');
+const util = require('util');
+const stream = require('stream');
+const pipeline = util.promisify(stream.pipeline);
 
-let sharedData;
+// const {client} = new Client();
+const port = process.env.PORT || 8005;
+const https = require('https');
+
+const jsdom = require("jsdom");
+const { JSDOM } = jsdom;
+
+const dom = new JSDOM(`<!DOCTYPE html><p>Hello world</p>`);
+global.window = dom.window;
+global.document = dom.window.document;
+
+const ejs = require('ejs');
+// const User = require('./models/user');
+
+const mongoose = require('mongoose');
+const multer = require('multer');
+const upload = multer({ dest: 'public/Images' });
+// var upload = multer({limits: {fileSize: 1064960 },dest:'/uploads/'}).single('picture');
 
 
-const ngrok = require('ngrok');
+// const Grid = require('gridfs-stream');
 
 
 
+
+const base64Img = require('base64-img');
+
+
+
+
+app.use(express.static(path.join(__dirname, '')));
 app.set('view engine', 'ejs');
-app.use(express.static('public'));
+// app.set('view engine', 'ejs');
+// app.use(express.static('public'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+
+
 app.use(function(req, res, next) {
+  // res.header("Access-Control-Allow-Origin", `https://${process.env.PORT}-zakhoudache-jisrpharmac-q94cj5igwn9.ws-eu88.gitpod.io`);
   res.header("Access-Control-Allow-Origin", "*");
   res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-  res.header('Content-Security-Policy: none')
-  // res.header("ngrok-skip-browser-warning","true");
   next();
 });
 
@@ -33,251 +62,166 @@ app.use(session({
   saveUninitialized: true
 }));
 
-
-// ngrok.connect({ addr: 8002 }, (err, url) => {
-//   if (err) {
-//     console.error('Error starting ngrok', err);
-//     return;
-//   }
-//   console.log(`ngrok tunnel is active at ${url}`);
-// });
-
-
-
-// ngrok.connect({
-//   addr: 8002,
-//   authtoken: '2M5XgItMGFOxsWVsakdcSCkfRBl_6LuyjHVb6jfgv8hohCv72',
-// }).then(url => {
-//   console.log(`Tunnel is open at ${url}`);
-// }).catch(error => {
-//   console.error('Error opening tunnel:', error);
-// });
-
-
-
-
-// (async function() {
-//   try {
-//     // Start an SSH tunnel using ngrok
-//     const url = await ngrok.connect({
-//       proto: 'tcp',
-//       addr: 443,
-//       authtoken: '2M5XgItMGFOxsWVsakdcSCkfRBl_6LuyjHVb6jfgv8hohCv72',
-//     });
-//     console.log(`SSH tunnel created at: ${url}`);
-
-//     // Spawn a new ssh process using the ngrok URL
-//     const sshProcess = spawn('ssh', ['-o', 'StrictHostKeyChecking=no', '-J', url, 'MCS@localhost']);
-
-//     sshProcess.stdout.on('data', data => console.log(data.toString()));
-//     sshProcess.stderr.on('data', data => console.error(data.toString()));
-//     sshProcess.on('exit', code => console.log(`SSH process exited with code ${code}`));
-//   } catch (error) {
-//     console.error('Failed to create SSH tunnel:', error);
-//   }
-// })();
-
-app.listen(8002,() => {
-  console.log(`Server running at http://localhost:${8002}`);
-});
-
-app.post('/chifa', async (req, res, next) => {
-  let fileName = req.body.fileName;
-  let dir = `src\\public\\Images\\${fileName}`;
-  let imageChifa = req.body.imageChifa;
-  let imagePath = path.join(dir, `Chifa@${fileName}.jpg`);
-
-  req.session.fileName = fileName;
-  req.session.dir = dir;
-  req.session.imageChifa = imageChifa;
-  req.session.imagePath = imagePath;
-
-  sharedData = { 
-    dir: `src\\public\\Images\\${fileName}`,
-    imageChifa: imageChifa,
-    fileName: fileName,
-    imagePath: imagePath
-  };
-
-  res.send('Data saved');
-
-  if (!imageChifa) {
-    return res.status(400).send({ error: 'imagedata is required' });
-  }
-
-  if (!fs.existsSync(dir)) {
-    fs.mkdirSync(dir, { recursive: true });
-  }
-
-  let counter = 0;
-  while (fs.existsSync(imagePath)) {
-    counter += 1;
-    imagePath = path.join(dir, `Chifa@${fileName}${counter}.jpg`);
-  }
-
-  const writeToFile = (text) => {
-    fs.appendFile('ListFilename.txt', text + ' \n', (err) => {
-      if (err) throw err;
-      console.log(`I'm ${req.session.fileName} My path's text was appended to ListFilename.txt ! and here it is : ${text}`);
-    });
-  };
-  writeToFile(imagePath);
-
-  axios({
-    method: 'get',
-    url: imageChifa,
-    responseType: 'stream'
-  })
-    .then(function (res) {
-      res.data.pipe(fs.createWriteStream(imagePath));
-    });
-});
-
-app.use("/", (req, res) => {
+app.get("/", (req, res) => {
   res.send("fffffffffffffffff")
 })
 
-
-app.post('/ordonnance', async (req, res, next) => {
-  let fileName = req.body.fileName;
-  let dir = `src\\public\\Images\\${fileName}`;
-  let imageOrdonnance = req.body.imageOrdonnance;
-  let imagePath = path.join(dir, `Ordonnance@${fileName}.jpg`);
-
-  req.session.fileName = fileName;
-  req.session.dir = dir;
-  req.session.imageOrdonnance = imageOrdonnance;
-  req.session.imagePath = imagePath;
-
-  sharedData = { 
-    dir: `src\\public\\Images\\${fileName}`,
-    imageOrdonnance: imageOrdonnance,
-    fileName: fileName,
-    imagePath: imagePath
-  };
-
-  res.send('Data saved');
-
-  if (!imageOrdonnance) {
-    return res.status(400).send({ error: 'imagedata is required' });
-  }
-
-  if (!fs.existsSync(dir)) {
-    fs.mkdirSync(dir, { recursive: true });
-  }
-
-  let counter = 0;
-  while (fs.existsSync(imagePath)) {
-    counter += 1;
-    imagePath = path.join(dir, `Ordonnance@${fileName}${counter}.jpg`);
-  }
-
-  const writeToFile = (text) => {
-    fs.appendFile('ListFilenameOrdonnance.txt', text + '\n', (err) => {
-      if (err) throw err;
-      console.log(`I'm ${req.session.fileName} My path's text was appended to ListFilenameOrdonnance.txt ! and here it is : ${text}`);
-      // console.log('The text was appended to file!');
-    });
-  };
-  writeToFile(imagePath);
-
-  axios({
-    method: 'get',
-    url: imageOrdonnance,
-    responseType: 'stream'
-  })
-    .then(function (res) {
-      res.data.pipe(fs.createWriteStream(imagePath));
-    });
+app.listen(process.env.PORT||8005,() => {
+  console.log(`Server running at http://localhost:${8005}`);
 });
 
 
-// const admin = require('firebase-admin');
 
-//   // Initialize Firebase
-//   const serviceAccount = require('C:\\Users\\MCS\\OneDrive\\Desktop\\Jisr pharmacy\\firstprojectt-2c1de-firebase-adminsdk-c2kai-5df1d0560e.json');
-  
-//   admin.initializeApp({
-//     credential: admin.credential.cert(serviceAccount),
-//     databaseURL: 'https://firstprojectt-2c1de-default-rtdb.firebaseio.com'
-//   });
-  
-app.post('/Postaddr',async (req, res, next) => {
-  let Adr = req.body.Adr;
-  req.session.Adr=Adr;
 
-  sharedData = { 
-    Adr: Adr
-  };
 
-  res.send('Data saved');
-  console.log(Adr)
-  
-  
+const $ = require('jquery');
 
-  const message = {
-    chatfuel_token: 'HAEZnzGAbTVZeN8RYbFodOdq3cFYBBmb6eFc34SnStOPonQcmk5brpWhgvNhaWgg', // the token for the sending chatbot
-    chatfuel_message_tag: 'CHATFUEL_MESSAGE_TAG', // the message tag for the message (optional)
-    chatfuel_block_id: '63f4f7841d0ea92711afe86b', // the ID of the block in the receiving chatbot to trigger
-    chatfuel_user_id: '6155861414436575', // the user ID of the user to send the message to in the receiving chatbot
-    custom_payload: { message: Adr } // the message you want to send
-  };
-  console.log(message.custom_payload.message)
-  res.end(`lets send ${message.custom_payload.message}`);
-  
+app.get('/pharma', function(req, res) {
+  res.sendFile('D:\\Jisr pharma\\page1.html')
+});
 
-  // // Store the message sent by the first Chatfuel chatbot in Firebase
-  // admin.database().ref('messages').set({
-  //   message: message
-  // });
-  
-  // // Retrieve the stored message in your webhook
-  // admin.database().ref('messages').once('value')
-  //   .then((snapshot) => {
-  //     const message = snapshot.val().message;
-  //     console.log(message);
-  //     // Use the message in your webhook logic to trigger the desired action
-  //   })
-  //   .catch((error) => {
-  //     console.error(error);
-  //   });
-  
-  // Define the URL for the receiving chatbot's JSON API
-  const url = `https://api.chatfuel.com/bots/63f49b619557a962ef4bfc7b/users/${message.chatfuel_user_id}/send?chatfuel_token=${message.chatfuel_token}&chatfuel_block_id=${message.chatfuel_block_id}`;
-  
-  // Send the message using a POST request
-  request.post({
-    url: url,
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify(message.custom_payload)
-  }, (error, response, body) => {
-    if (error) {
-      console.error(error);
-    } else {
-      console.log(body);
+
+function loadTextFile(callback) {
+  // Make the first GET request
+  fs.readFile('ListFilename.txt', 'utf8', (err, data1) => {
+    if (err) {
+      console.error(`Error reading ListFilename.txt: ${err}`);
+      return callback(err);
     }
-  });
-  
-  console.log(Adr)
-  // console.log(adresse)
- 
-  // console.log(res)
-}
-)
 
-app.get('/pharma', function (req, res){   
+    fs.readFile('ListFilenameOrdonnance.txt', 'utf8', (err, data2) => {
+      if (err) {
+        console.error(`Error reading ListFilenameOrdonnance.txt: ${err}`);
+        return callback(err);
+      }
 
-    const filePath = path.join(__dirname, "" ,"Pharmacywindow.html");
-    res.sendFile(filePath);
+      let $table = $("<table></table>");
+      let lastLineC = data1.trim().split("\n");
+      let lastLineO = data2.trim().split("\n");
+
+      for (let i = 0; i < lastLineC.length; i++) {
+        const filenameC = lastLineC[i].trim();
+        const filenameO = lastLineO[i].trim();
+
+        let $tableRow = $("<tr></tr>");
+        let $textCell = $("<td></td>").text(filenameC + filenameO);
+        let linkUrlC = `/src/Site1/Accueil.html?linkUrlC=${filenameC}`;
+        let $linkCellChifa = $("<td></td>").html(`<a href="${linkUrlC}">Go to Page Accueil-C.html</a>`);
+        let linkUrlO = `/src/Site1/Accueil.html?linkUrlO=${filenameO}`;
+        let $linkCellOrdonnance = $("<td></td>").html(`<a href="${linkUrlO}">Go to Page Accueil-O.html</a>`);
+        let linkUrl_C_O = `/src/Site1/Accueil.html?linkUrlC=${filenameC}&linkUrlO=${filenameO}`;
+        let $linkCellChifa_Ord = $("<td></td>").html(`<a href="${linkUrl_C_O}">Go to Page Accueil-C-O.html</a>`);
+
+        $tableRow.append($textCell, $linkCellChifa, $linkCellOrdonnance, $linkCellChifa_Ord);
+        $table.append($tableRow);
+
+        // Store the updated list of added filenames and image order in local storage
+        let imageOrder = [];
+        for (let i = 0; i < filenameC.length; i++) {
+          imageOrder.push(filenameC[i]);
+          imageOrder.push(filenameO[i]);
+        }
+      }
+        
+        $table.append("<thead><tr><th>Image Paths</th><th>Go Chifa</th><th>Go Ordonnance</th><th>Go Chifa-Ordonnance</th></tr></thead>");
+        $table.append("<tbody></tbody>");
+      
+        html = `<html>
+        <head>
+        <style>
+        #table-container {
+          width: 100%;
+          margin: 0 auto;
+          padding: 20px;
+          font-family: sans-serif;
+        }
+        
+        table {
+          border-collapse: collapse;
+          width: 100%;
+        }
+        
+        thead tr {
+          background-color: #1abc9c;
+          color: #fff;
+          text-align: left;
+        }
+        
+        th,
+        td {
+          padding: 12px 15px;
+          text-align: left;
+          border-bottom: 1px solid #ddd;
+        }
+        
+        tbody tr:nth-child(even) {
+          background-color: #f2f2f2;
+        }
+        
+        a {
+          text-decoration: none;
+          color: #1abc9c;
+        }
+        
+        a:hover {
+          text-decoration: underline;
+        }
+        
+        </style>
+      
+          <title>List of filenames</title>
+        </head>
+        <body>
+          ${$table.prop('outerHTML')}
+        </body>
+      </html>`;
+       
+        callback(null, html);
+
     
+    // processData(data1, data2);
+  });
+});
 
-  })
-console.log(sharedData)
+}
+
+function createTableRow(filenameC,filenameO) {
+  // Implementation of createtablerow function goes here
+  
+    // Create the table row
+    let $row = $("<tr></tr>");
+  
+    let $filenameCCell_OCell = $("<td></td>").text(filenameC+filenameO);
+    $row.append($filenameCCell_OCell);
+   
+  
+    // Add the links to the table
+    let linkUrlC = `/src/Site1/Accueil.html?linkUrlC=\\${filenameC}`;
+    let $linkC_Chifa = $("<td></td>").html(`<a href="${linkUrlC}">Go to Page Accueil-C.html</a>`);
+    $row.append($linkC_Chifa);
+  
+    let linkUrlO = `/src/Site1/Accueil.html?linkUrlO=\\${filenameO}`;
+    let $linkC_Ordonnance = $("<td></td>").html(`<a href="${linkUrlO}">Go to Page Accueil-O.html</a>`);
+    $row.append($linkC_Ordonnance);
+    // let linkUrl_C_O = `\\src\\Site1\\Accueil.html?linkUrlC=${imageOrder[i]}&linkUrlO=${imageOrder[i+1]}`;
+  
+    let linkUrl_C_O = `src/Site1/Accueil.html?linkUrlC=\\${filenameC}&linkUrlO=\\${filenameO}`;
+    let $linkC_Chifa_Ord = $("<td></td>").html(`<a href="${linkUrl_C_O}">Go to Page Accueil-C-O.html</a>`);
+    $row.append($linkC_Chifa_Ord);
+    // Add the row to the table
+    // $table.prepend($row);
+      // }
+  
+    return $row;
   
 
   
+}
+app.get('/src/public/Images/:filename/:filename', (req, res) => {
+  const filename = req.params.filename;
+  const imagePath = path.join(__dirname, 'src/public/Images/',filename, filename);
+  res.sendFile(imagePath);
+});
   const request = require('request');
 
   // Define the message parameters
@@ -285,3 +229,441 @@ console.log(sharedData)
 
 
 
+
+
+
+// Connect to MongoDB
+mongoose.connect("mongodb+srv://zhoudache:alcahyd51@cluster0.ughawgz.mongodb.net/test", { useNewUrlParser: true, useUnifiedTopology: true });
+const db = mongoose.connection;
+const { GridFSBucket } = require('mongodb');
+  // Create a new GridFSBucket object
+  const bucket = new GridFSBucket(db);
+// const { MongoClient } = require('mongodb');
+
+db.on('error', console.error.bind(console, 'connection error:'));
+db.once('open', function() {
+  console.log('Connected to MongoDB');
+});
+
+
+
+const userSchema = new mongoose.Schema({
+
+
+  chifaImage: {
+    firstName: { type: String, required: false},
+    lastName: { type: String, required: false},
+    name: { type: String, required: false },
+    data: { type: Buffer, required: false },
+    contentType: { type: String, required: false }
+  },
+  ordonnanceImage: {
+    firstName: { type: String, required: false},
+    lastName: { type: String, required: false},
+    name: { type: String, required: false },
+    data: { type: Buffer, required: false },
+    contentType: { type: String, required: false }
+  },
+  chifa_ordonnanceImages:{
+    coText:{type: [String], required: false} // updated to an array of strings
+  },
+  adresse: { 
+    adresseText:{type: String, required: false }
+  }
+  
+  
+ 
+});
+
+// Create a schema for the placeholder data
+const placeholderSchema = new mongoose.Schema({
+  orderNumber: String,
+  isAccepted: Boolean,
+  isRefused: Boolean,
+  isOnMyWay: Boolean,
+  isDone: Boolean,
+  isNotStarted: Boolean
+});
+
+
+// Create a schema for the page state
+const stateSchema = new mongoose.Schema({
+  placeholderCount: Number,
+  cardDisplay: String,
+  checkboxContainerDisplay: String,
+  acceptButtonDisplay: String,
+  refuseButtonDisplay: String,
+  onMyWayCheckboxChecked: Boolean,
+  doneCheckboxChecked: Boolean,
+  notStartedCheckboxChecked: Boolean,
+  orderNumber: String
+});
+
+// Create a model for the page state
+const State = mongoose.model('State', stateSchema);
+
+
+// Create a model for the placeholder data
+const Placeholder = mongoose.model("Placeholder", placeholderSchema);
+
+
+
+
+
+
+const User = mongoose.model('User', userSchema);
+
+    // Save image data to MongoDB
+    const Image = mongoose.model('Image', new mongoose.Schema({
+      name: String,
+      image: {
+        data: Buffer,
+        contentType: String
+      }
+    }));
+
+
+
+// Create a temporary object to store user data
+let tempUser = {
+  chifaImage: null,
+  ordonnanceImage: null,
+  chifa_ordonnanceImages:null,
+  adresse: null
+};
+// Configure multer storage engine
+// const storage = multer.diskStorage({
+//   destination: function (req, file, cb) {
+//     cb(null, 'public/Images/'); // set the destination folder for the uploaded file
+//   },
+//   filename: function (req, file, cb) {
+//     // const extension = path.extname(file.originalname); // get the file extension
+//     cb(null, file.fieldname + '-' + Date.now()); // set the filename
+//   }
+// });
+
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    const dir = 'public/Images/';
+    if (!fs.existsSync(dir)) {
+      fs.mkdirSync(dir, { recursive: true }); // create the directory if it doesn't exist
+    }
+    cb(null, dir);
+  },
+  filename: function (req, file, cb) {
+    // const extension = path.extname(file.originalname); // extract the file extension
+    cb(null, file.fieldname + '-' + Date.now() + extension);
+  }
+});
+
+// Create multer instance with storage engine
+const downloadFile = (fileUrl, localPath) => {
+  return new Promise((resolve, reject) => {
+    const file = fs.createWriteStream(localPath);
+
+    https.get(fileUrl, response => {
+      response.pipe(file);
+      file.on('finish', () => {
+        file.close(() => {
+          console.log('File downloaded successfully.');
+          const fileData = fs.readFileSync(localPath);
+          resolve(fileData);
+        });
+      });
+    }).on('error', error => {
+      fs.unlink(localPath, () => {
+        reject(`Error downloading file: ${error.message}`);
+      });
+    });
+  });
+};
+let sharedData=[];
+// Endpoint for uploading Chifa image and name
+app.post('/chifa', upload.single('image'), async (req, res, next) => {
+  const fileUrl = req.body.imageChifa;
+  const fileextension = fileUrl.split('/').pop();
+  const filePart = fileextension.split('?')[0].split('.');
+  const extension = filePart[filePart.length - 1];
+  let localPath = `src/public/Images/${req.body.fileName}/Chifa@${req.body.fileName}.${extension}`;
+  let counter = 0;
+  while (fs.existsSync(localPath)) {
+    counter += 1;
+    localPath = path.join(
+      __dirname,
+      `src/public/Images/${req.body.fileName}/Chifa@${req.body.fileName}${counter}.${extension}`
+    );
+  }
+  console.log(req.body.imageChifa, localPath); // log the uploaded file object
+
+  const lastName = req.body.lastName;
+  const imageName = `Chifa@${req.body.fileName}${counter}.${extension}`;
+  const imagePath = path.join(__dirname, `src\\public\\Images\\${req.body.fileName}`, imageName);
+  console.log(imagePath);
+
+let imageNameChifa=imageName
+  sharedData.imageNameChifa = imageNameChifa;
+  
+  // Wait for the file to download and get the buffer
+  const buffer = await downloadFile(req.body.imageChifa, localPath);
+
+  // Add chifaImage data to tempUser
+  tempUser.chifaImage = {
+    firstName: req.body.fileName,
+    lastName: lastName,
+    name: imageName,
+    data: buffer,
+    contentType: `image/${extension}`,
+  };
+  console.log('Chifa image uploaded successfully', tempUser.chifaImage);
+
+  next();
+});
+// Endpoint for uploading Ordonnance image and name
+app.post('/ordonnance', upload.single('image'), async (req, res) => {
+
+     
+  const fileUrl=req.body.imageOrdonnance;
+  const fileextension =fileUrl.split('/').pop();
+  const filePart = fileextension.split('?')[0].split('.');
+  const extension = filePart[filePart.length - 1];
+  let localPathO=`src/public/Images/${req.body.fileName}/Ordonnance@${req.body.fileName}.${extension}`;
+  
+  
+let counter = 0;
+while (fs.existsSync(localPathO)) {
+  counter += 1;
+  localPathO = path.join(__dirname, `src/public/Images/${req.body.fileName}/Ordonnance@${req.body.fileName}${counter}.${extension}`);
+}
+console.log(req.body.imageOrdonnance, localPathO, counter); // log the uploaded file object
+
+// buffer=downloadFile(req.body.imageOrdonnance,localPath)
+downloadFile(req.body.imageOrdonnance, localPathO).then(buffer => {
+  tempUser.ordonnanceImage = {
+    firstName: req.body.fileName,
+    lastName: lastName,
+    name: imageName,
+    data: buffer,
+    contentType: `image/${extension}`
+  }; 
+  console.log('Ordonnance image uploaded successfully', tempUser.ordonnanceImage);
+
+}).catch(error => {
+  console.error(`Error downloading file: ${error.message}`);
+});
+
+const lastName= req.body.lastName;
+const imageName = `Ordonnance@${req.body.fileName}${counter}.${extension}`;
+const imagePathO = path.join(__dirname, `src\\public\\Images\\${req.body.fileName}\\Ordonnance@${req.body.fileName}${counter}.${extension}`);
+console.log(imagePathO);
+
+
+const chifa_ordonnanceImages =[sharedData.imageNameChifa, imageName];
+
+tempUser.chifa_ordonnanceImages = {
+
+   coText : chifa_ordonnanceImages
+
+}
+console.log('Chifa and Ordonnance Both images sent together!',tempUser.chifa_ordonnanceImages);
+res.send('Ordonnance image uploaded successfully and Chifa and Ordonnance Both images sent together!'); // rest of your code goes here
+});
+
+
+
+let globalAdr;
+
+
+let sharedAdresse={}
+// Endpoint for uploading adresse
+app.post('/adresse', async (req, res, next) => {
+  const adresse = req.body.Adr;
+  sharedAdresse.adresse=req.body.Adr;
+    
+  // Add adresse data to tempUser
+  tempUser.adresse = {
+    adresseText: adresse
+  };
+
+  // res.send('Adresse saved successfully');
+
+  // Create the user if all data has been submitted
+  if (tempUser.chifaImage && tempUser.ordonnanceImage && tempUser.adresse && tempUser.chifa_ordonnanceImages.coText) {
+    const user = new User(tempUser);
+    console.log(user)
+    await user.save();
+    res.redirect('/livreurs.html');
+    // Clear tempUser data
+    // tempUser = {
+    //   chifaImage: null,
+    //   ordonnanceImage: null,
+    //   adresse: null
+    // };
+  }
+  next();
+  console.log('User created:');
+  // console.log(tempUser.chifaImage.data==tempUser.ordonnanceImage.data);
+});
+
+app.get("/adresses", async function(req, res) {
+  try {
+    const placeholders = await Placeholder.find({});
+    res.send(placeholders);
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Error retrieving placeholders from database");
+  }
+});
+
+
+// });
+app.get('/last-placeholder-id', async (req, res) => {
+  try {
+    const placeholder = await Placeholder.findOne({}, '_id', { sort: { _id: -1 } });
+    res.json({ lastPlaceholderId: placeholder ? placeholder._id : null });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Server error');
+  }
+});
+
+
+// Route to retrieve all placeholders
+app.get('/placeholders', async (req, res) => {
+  try {
+    const placeholders = await Placeholder.find({});
+    res.json(placeholders);
+  } catch (error) {
+    console.log(error);
+    res.status(500).send('Server error');
+  }
+});
+// _id: ObjectId('6405c491811a53791e8d1121')
+
+app.put("/placeholder/:id", function(req, res) {
+  const id = req.params.id;
+  const updateObject = req.body;
+
+  Placeholder.findByIdAndUpdate(id, updateObject, function(err, placeholder) {
+    if (err) {
+      console.error(err);
+      res.status(500).send("Error updating placeholder in database");
+    } else {
+      console.log("Placeholder updated in database");
+      res.status(200).send("Placeholder updated in database");
+      console.log(res)
+    }
+  });
+});
+
+
+
+
+// Create a route that saves the state to MongoDB
+app.post('/save-state', async function (req, res) {
+  const orderNumber = req.body.orderNumber;
+
+  // Concatenate the values of the placeholder to create a search string
+  const searchString = `${orderNumber}${req.body.isAccepted}${req.body.isRefused}${req.body.isOnMyWay}${req.body.isDone}${req.body.isNotStarted}`;
+
+  // Check if a placeholder with the same order number and values already exists
+  const placeholder = await State.findOne({
+    $and: [
+      { orderNumber: orderNumber },
+      { isAccepted: req.body.isAccepted },
+      { isRefused: req.body.isRefused },
+      { isOnMyWay: req.body.isOnMyWay },
+      { isDone: req.body.isDone },
+      { isNotStarted: req.body.isNotStarted }
+    ]
+  });
+
+  if (placeholder) {
+    console.log("Placeholder already exists in database");
+    res.status(200).send("Placeholder already exists in database");
+  } else {
+    console.log("Creating a new placeholder .... ")
+    // Create a new placeholder if it doesn't already exist
+    const newPlaceholder = new State({
+      orderNumber: orderNumber,
+      isAccepted: req.body.isAccepted,
+      isRefused: req.body.isRefused,
+      isOnMyWay: req.body.isOnMyWay,
+      isDone: req.body.isDone,
+      isNotStarted: req.body.isNotStarted,
+      searchString: searchString
+    });
+
+    await newPlaceholder.save();
+    console.log("Placeholder saved to database");
+    res.status(200).send("Placeholder saved to database");
+  }
+});
+
+// Create a route that retrieves all states from MongoDB
+app.get('/get-state', (req, res) => {
+  State.find({})
+    .then((docs) => {
+      const states = docs.map((doc) => doc.toObject());
+      console.log(states)
+      res.send(states);
+    })
+    .catch((error) => {
+      console.log("Error retrieving states from database: ", error);
+      res.json(states)
+      res.status(500).send("Error retrieving states from database");
+    });
+});
+
+
+// route to display the HTML table with user data
+app.get('/users', async (req, res) => {
+  try {
+    const users = await User.find({});
+    res.json(users);
+    // console.log(users);
+
+    // res.render('users.ejs', { users });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Internal server error');
+  }
+});
+
+
+app.get('/getAddr', async (req, res) => {
+    // retrieve the stored address from the global variable
+    const storedAddr = globalAdr;
+const adresse= sharedAdresse.adresse;
+      // send the paragraphs as a JSON response
+      // res.json(storedAddr.map(p => p.text));
+    res.json(adresse);
+    console.log(adresse);
+
+});
+
+
+
+// Define endpoint for receiving incoming messages from Chatfuel
+app.post('/incoming', (req, res) => {
+  const userId = req.body.chatfuel_user_id;
+  const botId = req.body.chatfuel_bot_id;
+  const token = req.body.chatfuel_token;
+
+  // Construct the message payload
+  const payload = {
+    chatfuel_token: token,
+
+    chatfuel_block_name: 'incoming',
+    chatfuel_attributes: {
+      key1: 'A',
+      key2: 'value2',
+      // Add more attributes as needed
+    }
+  };
+})
+
+
+module.exports = User;
+module.exports = Placeholder;
+// module.exports = handleWebhook;
+module.exports = mongoose.model('User', userSchema);

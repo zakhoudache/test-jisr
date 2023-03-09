@@ -1,0 +1,141 @@
+/* Global styles */
+
+body {
+    font-family: "Open Sans", sans-serif;
+    margin: 0;
+    padding: 0;
+  }
+  
+  a {
+    text-decoration: none;
+    color: inherit;
+  }
+  
+  /* Header */
+  
+  .header {
+    background-color: #212529;
+    color: #fff;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px;
+  }
+  
+  .header h1 {
+    font-size: 24px;
+    margin: 0;
+    font-weight: 600;
+  }
+  
+  .header a {
+    font-size: 16px;
+    font-weight: 400;
+  }
+  
+  /* Main content */
+  
+  .container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+  }
+  
+  .card {
+    background-color: #fff;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    padding: 20px;
+  }
+  
+  .card h2 {
+    font-size: 18px;
+    margin-top: 0;
+    margin-bottom: 10px;
+  }
+  
+  .placeholder {
+    background-color: #f8f8f8;
+    border-radius: 5px;
+    border: 1px solid #e0e0e0;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    margin-bottom: 20px;
+  }
+  
+  .placeholder p {
+    margin-top: 0;
+    margin-bottom: 10px;
+  }
+  
+  .buttons {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 20px;
+  }
+  
+  .button {
+    border-radius: 5px;
+    border: none;
+    color: #fff;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 600;
+    padding: 10px 20px;
+  }
+  
+  .accept-button {
+    background-color: #1abc9c;
+  }
+  
+  .accept-button:hover {
+    background-color: #16a085;
+  }
+  
+  .refuse-button {
+    background-color: #e74c3c;
+  }
+  
+  .refuse-button:hover {
+    background-color: #c0392b;
+  }
+  
+  .disabled {
+    opacity: 0.5;
+    pointer-events: none;
+  }
+  
+  /* Footer */
+  
+  .footer {
+    background-color: #f8f8f8;
+    color: #555;
+    padding: 10px;
+    text-align: center;
+    font-size: 14px;
+  }
+  
+  .footer a {
+    color: #555;
+    font-weight: 600;
+  }
+  /* Placeholder container */
+#placeholder-container{
+    width:140% !important;
+   }
+   
+   /* Placeholder buttons */
+   #placeholder-container .placeholder-frame .placeholder-buttons{
+    left:258px;
+    right:auto !important;
+    transform:translatex(173px) translatey(0px);
+   }
+   
+   /* Heading */
+   .card .card-header h3{
+    width:100% !important;
+    font-weight:300;
+   }
+   
+   

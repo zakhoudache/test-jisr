@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>My Placeholder Frames</title>
+	<style>
+          .card {
+        border-radius: 0.375rem;
+        box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+        background-color: #ffffff;
+        width: 22rem;
+        margin: 0 auto;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        padding: 2rem;
+        /* transform:translatex(733px) translatey(-1320px); */
+        margin-left: 81px;
+        margin-right: 40px;
+        margin-bottom: 0px;
+        padding-right: 8px;
+        width: 255px;
+        min-height: 106px;
+        flex-wrap: wrap;
+        transform: translatex(700px) translatey(100px);
+        top: 13px;
+        bottom: 30px;
+        left: -101px;
+        position: fixed;
+        /* transform:translatex(591px) translatey(-1230px); */
+        margin-left: 33px;
+        max-height: 150px;
+      }
+
+      .card-header {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-bottom: 2rem;
+      }
+
+      .card-title {
+        font-size: 1.5rem;
+        font-weight: bold;
+        text-transform: uppercase;
+        margin: 0;
+      }
+
+      .card-body {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+      }
+
+      .card-text {
+        font-size: 1.125rem;
+        line-height: 1.5rem;
+        text-align: center;
+        margin: 0;
+      }
+
+      #placeholder-count {
+        font-weight: bold;
+        color: #007bff;
+      }
+
+      body {
+        background-color: #f7f7f7;
+        color: #080808;
+        font-family: "Roboto", sans-serif;
+        font-size: 16px;
+        line-height: 1.5;
+        margin: 0;
+        padding: 20px;
+        /* Body */
+        width: 452px;
+        padding-right: 23px;
+      }
+
+      .placeholder-frame {
+        background-color: #fff;
+        border-radius: 12px;
+        box-shadow: 0 0 0 2px #020202, 0 16px 32px rgba(2, 2, 2, 0.1);
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        margin-bottom: 20px;
+        padding: 40px;
+        position: relative;
+        text-align: center;
+        transform: translate3d(0, 0, 0);
+        width: 80%; /* adjust width to fit buttons and checkboxes */
+        max-width: 400px; /* add a maximum width to prevent excessive stretching */
+      }
+
+      .placeholder-text {
+        color: #ccc;
+        font-family: "Open Sans", sans-serif;
+        font-size: 20px;
+        font-style: italic;
+        margin: 0;
+      }
+button {
+  background-color: #4CAF50;
+  border: none;
+  border-radius: 4px;
+  color: #fff;
+  cursor: pointer;
+  font-size: 16px;
+  padding: 12px 20px;
+}
+
+.placeholder-frame {
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  box-shadow: 0px 0px 5px #ddd;
+  margin-bottom: 10px;
+  padding: 10px;
+  position: relative;
+}
+
+.placeholder-buttons {
+  display: flex;
+  position: absolute;
+  right: 10px;
+  top: 10px;
+}
+
+.placeholder-button {
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  background-color: #fff;
+  color: #333;
+  cursor: pointer;
+  font-size: 14px;
+  margin-right: 5px;
+  padding: 5px 10px;
+}
+
+.accept-button {
+  background-color: #1abc9c;
+  color: #fff;
+}
+
+.checkbox-container {
+  margin-top: 10px;
+}
+
+.checkbox-container label {
+  margin-left: 5px;
+}
+
+
+	</style>
+    <link rel="stylesheet" type="text/css" href="livreurs.css">
+	<link href="https://fonts.googleapis.com/css?family=Open+Sans:400,700|Roboto:400,700&display=swap" rel="stylesheet">
+</head>
+
+	<body>
+    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/cjs/react-jsx-dev-runtime.development.js" integrity="sha512-QP4RQ4QGVHF8Zal0gNDy81lpb2v0y+Cu01CGLUPrj5BJJ153XqCqqYFNJV5ylvIB9a/fYOzFhdKCvSnSaHEVcw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script> -->
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
+    <div id="placeholder-container"></div>
+    <div id="state-list"></div>
+	
+	
+  <script>
+fetch('/users?' + new Date().getTime())
+  .then(response => response.json())
+  .then(data => {
+    data.forEach(user => {
+      if (user.adresse.adresseText) {
+        console.log(user.adresse.adresseText)
+        createPlaceholder(user.adresse.adresseText);
+          loadState(user.adresse.adresseText); // call loadState to update the placeholders with saved state
+      }
+    });
+
+
+   })
+  .catch(error => console.error(error));
+
+function createPlaceholder(orderNumber) {
+  const placeholderState = {
+    orderNumber: orderNumber,
+    isAccepted: false,
+    isRefused: false,
+    isOnMyWay: false,
+    isDone: false,
+    isChecked:false,
+    // isUnChecked: false
+  };
+  addPlaceholder(placeholderState);
+}
+
+function isOddOrEven(number) {
+  if (number % 2 === 0) {
+    return "Even";
+    // number=+1;
+  } else {
+    return "Odd";
+
+  }
+}
+// Rest of the code remains the same
+var clic =1;
+console.log(clic);
+// const isOdd = (n) => (n & 1) === 1;
+function addPlaceholder(placeholderState) {
+  
+  const placeholderFrame = document.createElement("div");
+  placeholderFrame.classList.add("placeholder-frame");
+  placeholderFrame.dataset.order = placeholderState.orderNumber;
+  const orderNumber = placeholderState.orderNumber;
+  placeholderFrame.innerHTML = `
+    <p class="placeholder-info">Order #${orderNumber}</p>
+    <div class="placeholder-buttons">
+      <button class="placeholder-button accept-button">Accept</button>
+      <button class="placeholder-button refuse-button">Refuse</button>
+    </div>
+  `;
+  document.body.appendChild(placeholderFrame);
+
+  const acceptButton = placeholderFrame.querySelector(".accept-button");
+  const refuseButton = placeholderFrame.querySelector(".refuse-button");
+  const checkboxContainer = document.createElement("div");
+  checkboxContainer.classList.add("checkbox-container");
+  checkboxContainer.style.display = "none";
+  const onMyWayCheckbox = document.createElement("input");
+  onMyWayCheckbox.type = "checkbox";
+  onMyWayCheckbox.id = `on-my-way-checkbox-${orderNumber}`;
+  onMyWayCheckbox.classList.add("on-my-way-checkbox");
+  const onMyWayLabel = document.createElement("label");
+  onMyWayLabel.htmlFor = `on-my-way-checkbox-${orderNumber}`;
+  onMyWayLabel.classList.add("on-my-way-label");
+  onMyWayLabel.innerText = "On my way";
+  const doneCheckbox = document.createElement("input");
+  doneCheckbox.type = "checkbox";
+  doneCheckbox.id = `done-checkbox-${orderNumber}`;
+  doneCheckbox.classList.add("done-checkbox");
+  const doneLabel = document.createElement("label");
+  doneLabel.htmlFor = `done-checkbox-${orderNumber}`;
+  doneLabel.classList.add("done-label");
+  doneLabel.innerText = "Done";
+  checkboxContainer.appendChild(onMyWayCheckbox);
+  checkboxContainer.appendChild(onMyWayLabel);
+  checkboxContainer.appendChild(doneCheckbox);
+  checkboxContainer.appendChild(doneLabel);
+  placeholderFrame.appendChild(checkboxContainer);
+
+  acceptButton.addEventListener("click", () => {
+    placeholderState.isAccepted = true;
+    
+    
+    // placeholderState.isDone = false,
+    acceptButton.style.display = "none";
+    refuseButton.style.display = "none";
+    checkboxContainer.style.display = "block";
+    localStorage.setItem(`status-${orderNumber}`, JSON.stringify(placeholderState));
+    updatePlaceholderStateInLocalStorage(placeholderState);
+  });
+
+  refuseButton.addEventListener("click", () => {
+    placeholderState.isRefused = true;
+    placeholderFrame.closest(".placeholder-frame").classList.add("placeholder-disabled");
+    localStorage.setItem(`status-${orderNumber}`, JSON.stringify(placeholderState));
+    updatePlaceholderStateInLocalStorage(placeholderState);
+  });
+
+  onMyWayCheckbox.addEventListener("click", () => {
+  placeholderState.isOnMyWay = onMyWayCheckbox.checked;
+  placeholderState.isChecked = onMyWayCheckbox.checked;
+  updatePlaceholderStateInLocalStorage(placeholderState);
+})  
+
+//  doneCheckbox = document.getElementById("doneCheckbox");
+doneCheckbox.addEventListener("click", () => {
+  placeholderState.isDone = doneCheckbox.checked;
+  placeholderState.isChecked = doneCheckbox.checked;
+  updatePlaceholderStateInLocalStorage(placeholderState);
+})
+ 
+
+  // Pass the orderNumber to the loadState() function
+  loadState(orderNumber);
+}
+
+function updatePlaceholderStateInLocalStorage(placeholderState) {
+  const orderNumber = placeholderState.orderNumber;
+  const storedState = JSON.parse(localStorage.getItem(`status-${orderNumber}`)) || {};
+  localStorage.setItem(`status-${orderNumber}`, JSON.stringify({...storedState, ...placeholderState}));
+}
+
+
+function loadState(orderNumber) {
+  // Retrieve the placeholder state from localStorage using the orderNumber key
+  const placeholderState = JSON.parse(localStorage.getItem(`status-${orderNumber}`));
+
+  if (placeholderState) {
+    const onMyWayCheckbox = document.getElementById(`on-my-way-checkbox-${orderNumber}`);
+    const doneCheckbox = document.getElementById(`done-checkbox-${orderNumber}`);
+
+    if (onMyWayCheckbox && doneCheckbox) {
+      
+      const acceptButton = document.querySelector(`.placeholder-frame[data-order="${orderNumber}"] .accept-button`);
+      const refuseButton = document.querySelector(`.placeholder-frame[data-order="${orderNumber}"] .refuse-button`);
+      onMyWayCheckbox.checked = placeholderState.isOnMyWay;
+      doneCheckbox.checked = placeholderState.isDone;
+
+      const checkboxContainers = document.querySelectorAll(".checkbox-container");
+      checkboxContainers.forEach((container) => {
+        if (container.contains(onMyWayCheckbox) && container.contains(doneCheckbox)) {
+          acceptButton.style.display = "none";
+        refuseButton.style.display = "none";
+          container.style.display = "block";
+          if (placeholderState.isChecked) {
+            container.classList.add("checked");
+          }
+        }
+      });
+
+      if (placeholderState.isAccepted) {
+        acceptButton.style.display = "none";
+        refuseButton.style.display = "none";
+      }
+    }
+  }
+}
+
+
+
+// })
+// })
+  
+
+                        
+</script>
+	</body>
+</html>
+

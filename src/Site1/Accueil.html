@@ -99,27 +99,20 @@
                     <img class="u-back-image u-expanded" src="" id="imageChifa">
 
                     <script>
-                      // Get the link URL parameters from the URL
-                      let params = new URLSearchParams(window.location.search);
+              
+                                   let params = new URLSearchParams(window.location.search);
                       let linkUrlC = params.get("linkUrlC");
                       let linkUrlO = params.get("linkUrlO");
+                      
                     
-
-                        // Use the values of the parameters as needed
-                      // console.log("Link URL for Chifa: " + linkUrlC);
-                      // console.log("Link URL for Ordonnance: " + linkUrlO);
-
-
-                      // Display the link URLs in the img elements
-                      // $("#imageOrdonnance").attr("src", id);
-                      // $("#imageChifa").attr("src", linkUrlO);
 
                       let imageChifa = document.getElementById("imageChifa");
                       imageChifa.src = linkUrlC;
 
                       let imageOrdonnance = document.getElementById("imageOrdonnance");
-                      imageOrdonnance.src = linkUrlO;
-      
+                      imageOrdonnance.src =  linkUrlO;
+                    
+
                     </script>   
                   </div>
                   <div class="u-over-slide u-shading u-over-slide-2">
@@ -145,31 +138,73 @@
                 <input type="hidden" name="formServices" value="916b7ceec8794a66f8cd420d2e5fee23">
               </form>
             </div>
-            <a href="https://nicepage.com/c/real-estate-website-templates" class="u-btn u-button-style u-hover-palette-1-dark-1 u-palette-1-base u-btn-2">Bouton</a>
+            <!-- <a href="http://localhost:8005/livreurs.html?createPlaceholder=true" onclick="createPlaceholder();">Valider</a> -->
+            <!-- <a href="http://localhost:8005/livreurs.html?createPlaceholder=true" class="u-btn u-button-style u-hover-palette-1-dark-1 u-palette-1-base u-btn-2" onclick="createPlaceholder();">Valider</a> -->
+            <a href="#" id="myLink" class="u-btn u-button-style u-hover-palette-1-dark-1 u-palette-1-base u-btn-2" onclick="createPlaceholder();">Valider</a>
+
+           
+            <!-- <a href={`http://localhost:8005/livreurs.html?createPlaceholder=true&linkUrlA=${linkUrlA}`} class="u-btn u-button-style u-hover-palette-1-dark-1 u-palette-1-base u-btn-2" onclick="createPlaceholder();">Valider</a> -->
+
+            <!-- <a href="http://localhost:8005/livreurs.html?createPlaceholder=true&linkUrlA="{linkUrlA} class="u-btn u-button-style u-hover-palette-1-dark-1 u-palette-1-base u-btn-2" onclick="createPlaceholder();">Valider</a> -->
+            <!-- <a href="http://localhost:8005/livreurs.html?createPlaceholder=true" class="u-btn u-button-style u-hover-palette-1-dark-1 u-palette-1-base u-btn-2" id="validerButton">Valider</a> -->
+
             <a href="https://nicepage.com/c/real-estate-website-templates" class="u-active-palette-3-dark-1 u-border-none u-btn u-button-style u-hover-palette-1-dark-1 u-palette-1-base u-btn-3">Bouton</a>
             <div class="u-align-center u-clearfix u-custom-html u-grey-15 u-custom-html-1">
               <style></style>
+              <p class="addressParagraph"></p>
               <script>
+              let linkUrlA = params.get("linkUrlA");
+               let addressParagraph = document.getElementsByClassName("addressParagraph")[0];
+               addressParagraph.textContent = linkUrlA;
+               
+                function createPlaceholder() {
+          // const linkUrlA = user.adresse.adresseText;
+          // console.log(linkUrlA);
+
+          document.getElementById("myLink").href = `http://localhost:8005/livreurs.html?createPlaceholder=true&linkUrlA=${encodeURIComponent(linkUrlA)}`;
+
+          // submit the form data to the server
+          fetch('/save-state', {
+            method: 'POST',
+            body: JSON.stringify({paragraph: document.getElementsByClassName('addressParagraph')[0].textContent}), // Use [0] to get the first element with class 'addressParagraph'
+            headers: {
+              'Content-Type': 'application/json'
+            }
+          })
+            .then(function(response) {
+              if (response.ok) {
+                window.location.href = `http://localhost:8005/livreurs.html?createPlaceholder=true&linkUrlA=${linkUrlA}`; // Corrected URL with parameter name
+              } else {
+                console.log('Form submission failed.');
+              }
+            })
+            .catch(function(error) {
+              console.log(error);
+            });
+        }
+
+
+ 
+
+
                 var time = new Date();
                 var date = time.getFullYear()+'-'+(time.getMonth()+1)+'-'+time.getDate();
                 </script>
 
               
-<!-- 
+
            
                   
-                  <script type="text/javascript">
-                    var today = new Date();
-                    var day = today.getDay();
-                    var daylist = ["Sunday","Monday","Tuesday","Wednesday ","Thursday","Friday","Saturday"];
-                    var date = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
-                    var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
-                    var dateTime = date+' '+time;
-                     
-                    document.getElementById("displayDateTime").innerHTML = dateTime + ' <br> Day :- ' + daylist[day];
-                    -->
+                  <script>
+                   
                     </script>
-              <p>Sample HTML. Lorem ipsum dolor sit amet, consectetur adipiscing elit nullam nunc justo sagittis suscipit ultrices.</p>
+            
+             
+             <script>
+
+             </script>
+
+              <!-- <p>Sample HTML. Lorem ipsum dolor sit amet, consectetur adipiscing elit nullam nunc justo sagittis suscipit ultrices.</p> -->
             </div>
           </div>
         </div>
