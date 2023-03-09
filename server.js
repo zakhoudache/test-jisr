@@ -77,7 +77,7 @@ app.listen(process.env.PORT||8005,() => {
 const $ = require('jquery');
 
 app.get('/pharma', function(req, res) {
-  res.sendFile('page1.html')
+  res.sendFile('test-jisr/page1.html')
 });
 
 
