@@ -70,12 +70,25 @@ app.use(function(req, res, next) {
   next();
 });
 
+app.set('trust proxy', 1);
+
 app.use(session({
-  secret: 'secret-key',
-  resave: false,
-  saveUninitialized: true
+cookie:{
+    secure: true,
+    maxAge:60000
+       },
+store: new RedisStore(),
+secret: 'secret',
+saveUninitialized: true,
+resave: false
 }));
 
+app.use(function(req,res,next){
+if(!req.session){
+    return next(new Error('Oh no')) //handle error
+}
+next() //otherwise continue
+});
 
 // const crypto = require('crypto');
 
@@ -280,7 +293,7 @@ app.get('/src/public/Images/:filename/:filename', (req, res) => {
 
 
 // Connect to MongoDB
-mongoose.connect("mongodb+srv://zhoudache:alcahyd51@cluster0.ughawgz.mongodb.net/?retryWrites=true&w=majority", { useNewUrlParser: true, useUnifiedTopology: true });
+mongoose.connect(`mongodb+srv://zhoudache:${process.env.pass}@cluster0.ughawgz.mongodb.net/?retryWrites=true&w=majority`, { useNewUrlParser: true, useUnifiedTopology: true });
 const db = mongoose.connection;
 const { GridFSBucket } = require('mongodb');
   // Create a new GridFSBucket object
