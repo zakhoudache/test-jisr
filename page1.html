@@ -1,17 +1,17 @@
 <!DOCTYPE html>
 <html>
-  <style nonce="2726c7f26c">
-    #inline-style {
-      background: red;
-    }
+  <style>
+     #inline-style {
+          background: red;
+        }
   </style>
-  <meta http-equiv="Content-Security-Policy" content="style-src `nonce-2726c7f26c`">
+  <meta http-equiv="Content-Security-Policy" content="Content-Security-Policy: style-src 'unsafe-inline';">
   <link rel="stylesheet" href="page1.css" media="screen">
   <head>
-    
+    <!-- "content_security_policy", `Content-Security-Policy: style-src 'unsafe-inline';` -->
     <title>User Images</title>
    
-  </head>Content-Security-Policy: style-src 'nonce-2726c7f26c'
+  </head>
 
   <body>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
