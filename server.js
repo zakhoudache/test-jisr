@@ -67,7 +67,7 @@ app.use(globalCSP);
  
 app.use(function(req, res, next) {
   // res.header("Access-Control-Allow-Origin", `https://${process.env.PORT}-zakhoudache-jisrpharmac-q94cj5igwn9.ws-eu88.gitpod.io`);
-  res.header("Access-Control-Allow-Origin", "https://test-jisr-production.up.railway.app");
+  res.header("Access-Control-Allow-Origin", "https://${process.env.PORT}-test-jisr-production.up.railway.app/");
   res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
   next();
 });
@@ -97,15 +97,18 @@ app.set('trust proxy', 1);
 // // Generate a random 16-byte nonce value
 // const nonce = crypto.randomBytes(16).toString('base64');
 
-// // Set the Content Security Policy header
-// app.use((req, res, next) => {
-//   res.setHeader("content_security_policy", `Content-Security-Policy: style-src 'unsafe-inline';`);
-//   next();
-// });
+// Set the Content Security Policy header
+app.use((req, res, next) => {
+  res.setHeader('Content-Security-Policy', "style-src 'self' 'unsafe-inline'");
+
+  next();
+});
 
 // Render the HTML file with the nonce value in the style tag
 app.get('/', (req, res) => {
-  res.sendFile('test-jisr/page1.html')
+  res.setHeader('Content-Security-Policy', "style-src 'self' 'unsafe-inline'");
+
+  res.sendFile('D:\\Jisr pharma\\page1.html')
   // const html = `
   //   <!DOCTYPE html>
   //   <html>
@@ -314,7 +317,7 @@ app.get('/src/public/Images/:filename/:filename', (req, res) => {
 // }
 // );
 // Connect to MongoDBconst
-mongoose.connect(`mongodb+srv://zhoudache:{process.env.pass}@cluster0.ughawgz.mongodb.net/?retryWrites=true&w=majority`, { useNewUrlParser: true, useUnifiedTopology: true });
+mongoose.connect(`mongodb+srv://zhoudache${process.env.pass}@cluster0.ughawgz.mongodb.net/?retryWrites=true&w=majority`, { useNewUrlParser: true, useUnifiedTopology: true });
 const db = mongoose.connection;
 const { GridFSBucket } = require('mongodb');
   // Create a new GridFSBucket object
