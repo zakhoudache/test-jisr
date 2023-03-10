@@ -1,6 +1,6 @@
-const express = require("express");
-// const hostname = "127.0.0.1";
+const express = require('express');
 const session = require('express-session');
+// const RedisStore = require('connect-redis')(session);
 const app = express();
 const path = require("path");
 const fs = require("fs");
@@ -60,6 +60,8 @@ const cspPolicy = {
 const globalCSP = csp.getCSP(csp.STARTER_OPTIONS);
 const localCSP = csp.getCSP(cspPolicy);
  
+// const RedisStore = require('connect-redis')(session);
+
 // This will apply this policy to all requests if no local policy is set
 app.use(globalCSP);
  
@@ -72,23 +74,23 @@ app.use(function(req, res, next) {
 
 app.set('trust proxy', 1);
 
-app.use(session({
-cookie:{
-    secure: true,
-    maxAge:60000
-       },
-store: new RedisStore(),
-secret: 'secret',
-saveUninitialized: true,
-resave: false
-}));
+// app.use(session({
+// cookie:{
+//     secure: true,
+//     maxAge:60000
+//        },
+// store: new RedisStore(),
+// secret: 'secret',
+// saveUninitialized: true,
+// resave: false
+// }));
 
-app.use(function(req,res,next){
-if(!req.session){
-    return next(new Error('Oh no')) //handle error
-}
-next() //otherwise continue
-});
+// app.use(function(req,res,next){
+// if(!req.session){
+//     return next(new Error('Oh no')) //handle error
+// }
+// next() //otherwise continue
+// });
 
 // const crypto = require('crypto');
 
@@ -290,10 +292,29 @@ app.get('/src/public/Images/:filename/:filename', (req, res) => {
 
 
 
+//   const { MongoClient } = require('mongodb');
+// // const {MongoClient}= require('mongodb');
+// const mongoUri=`mongodb+srv://zhoudache:alcahyd2023@cluster0.ughawgz.mongodb.net/?retryWrites=true&w=majority`;
+
+// MongoClient.connect(mongoUri,{ useNewUrlParser: true, useUnifiedTopology: true }, (err, client)=> {
+//   if (err) {
+//       throw err;
+//   }
+//   console.log('connected to Mongodb')
+// });
 
 
-// Connect to MongoDB
-mongoose.connect(`mongodb+srv://zhoudache:${process.env.pass}@cluster0.ughawgz.mongodb.net/?retryWrites=true&w=majority`, { useNewUrlParser: true, useUnifiedTopology: true });
+// const uri = mongoUri;
+// const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true});
+// client.connect(err => {
+//   console.log('Connected to MongoDB');
+//   const collection = client.db("test");
+//   // perform actions on the collection object
+//   client.close();
+// }
+// );
+// Connect to MongoDBconst
+mongoose.connect(`mongodb+srv://zhoudache:{process.env.pass}@cluster0.ughawgz.mongodb.net/?retryWrites=true&w=majority`, { useNewUrlParser: true, useUnifiedTopology: true });
 const db = mongoose.connection;
 const { GridFSBucket } = require('mongodb');
   // Create a new GridFSBucket object
