@@ -70,7 +70,7 @@ const nonce = crypto.randomBytes(16).toString('base64');
 
 // Set the Content Security Policy header
 app.use((req, res, next) => {
-  res.setHeader('Content-Security-Policy', `default-src 'none'; style-src 'nonce-${nonce}'`);
+  res.setHeader("content_security_policy", "default-src 'self' style-src 'self' 'unsafe-inline';" );
   next();
 });
 
