@@ -1,10 +1,12 @@
 <!DOCTYPE html>
 <html>
-  <?php
-$nonce = bin2hex(random_bytes(16)); // generate a random nonce value
-header("Content-Security-Policy: default-src 'none'; style-src 'nonce-" . $nonce . "'"); // set the CSP header with the nonce value
-?>
-
+  <!-- <style>
+    #inline-style {
+      background: red;
+    }
+  </style> -->
+  
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'self' 'unsafe-inline'; script-src 'self'">
   <link rel="stylesheet" href="page1.css" media="screen">
   <head>
     
