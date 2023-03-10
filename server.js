@@ -48,7 +48,21 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 
+const csp = require('content-security-policy');
 
+ 
+const cspPolicy = {
+  'report-uri': '/reporting',
+  'default-src': csp.SRC_NONE,
+  'script-src': [ csp.SRC_SELF, csp.SRC_DATA ]
+};
+ 
+const globalCSP = csp.getCSP(csp.STARTER_OPTIONS);
+const localCSP = csp.getCSP(cspPolicy);
+ 
+// This will apply this policy to all requests if no local policy is set
+app.use(globalCSP);
+ 
 app.use(function(req, res, next) {
   // res.header("Access-Control-Allow-Origin", `https://${process.env.PORT}-zakhoudache-jisrpharmac-q94cj5igwn9.ws-eu88.gitpod.io`);
   res.header("Access-Control-Allow-Origin", "https://jisr-pharmacy.up.railway.app");
@@ -108,6 +122,7 @@ app.listen(process.env.PORT||8005,() => {
 const $ = require('jquery');
 
 app.get('/pharma', function(req, res) {
+  res.setHeader("content_security_policy", `Content-Security-Policy: style-src 'unsafe-inline';`);
   res.sendFile('test-jisr/page1.html')
 });
 
