@@ -1,0 +1,8 @@
+{
+    "app_id": "application-jisr-vgbud",
+    "config_version": 20210101,
+    "name": "Application-Jisr",
+    "location": "US-VA",
+    "provider_region": "aws-us-east-1",
+    "deployment_model": "LOCAL"
+}
