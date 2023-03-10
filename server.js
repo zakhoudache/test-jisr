@@ -77,36 +77,37 @@ app.use(session({
 }));
 
 
-const crypto = require('crypto');
+// const crypto = require('crypto');
 
-// Generate a random 16-byte nonce value
-const nonce = crypto.randomBytes(16).toString('base64');
+// // Generate a random 16-byte nonce value
+// const nonce = crypto.randomBytes(16).toString('base64');
 
-// Set the Content Security Policy header
-app.use((req, res, next) => {
-  res.setHeader("content_security_policy", `Content-Security-Policy: style-src 'unsafe-inline';`);
-  next();
-});
+// // Set the Content Security Policy header
+// app.use((req, res, next) => {
+//   res.setHeader("content_security_policy", `Content-Security-Policy: style-src 'unsafe-inline';`);
+//   next();
+// });
 
 // Render the HTML file with the nonce value in the style tag
 app.get('/', (req, res) => {
-  const html = `
-    <!DOCTYPE html>
-    <html>
-      <head>
-        <meta charset="utf-8">
-        <title>Example Page</title>
-        #inline-style {
-          background: red;
-        }
+  res.sendFile('test-jisr/page1.html')
+  // const html = `
+  //   <!DOCTYPE html>
+  //   <html>
+  //     <head>
+  //       <meta charset="utf-8">
+  //       <title>Example Page</title>
+  //       #inline-style {
+  //         background: red;
+  //       }
         
-      </head>
-      <body>
-        <h1>Hello, world!</h1>
-      </body>
-    </html>
-  `;
-  res.send(html);
+  //     </head>
+  //     <body>
+  //       <h1>Hello, world!</h1>
+  //     </body>
+  //   </html>
+  // `;
+  // res.send(html);
 });
 
 
@@ -122,7 +123,7 @@ app.listen(process.env.PORT||8005,() => {
 const $ = require('jquery');
 
 app.get('/pharma', function(req, res) {
-  res.setHeader("content_security_policy", `Content-Security-Policy: style-src 'unsafe-inline';`);
+  // res.setHeader("content_security_policy", `Content-Security-Policy: style-src 'unsafe-inline';`);
   res.sendFile('test-jisr/page1.html')
 });
 
