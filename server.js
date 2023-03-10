@@ -70,7 +70,7 @@ const nonce = crypto.randomBytes(16).toString('base64');
 
 // Set the Content Security Policy header
 app.use((req, res, next) => {
-  res.setHeader("content_security_policy", "default-src 'self' style-src 'self' 'unsafe-inline';" );
+  res.setHeader("content_security_policy", `style-src css-cdn.example.com 'nonce-rAnd0m'; `);
   next();
 });
 
@@ -82,8 +82,10 @@ app.get('/', (req, res) => {
       <head>
         <meta charset="utf-8">
         <title>Example Page</title>
-       
-        </style>
+        <style nonce="rAnd0m">
+        .red { color: red }
+      </style>
+        
       </head>
       <body>
         <h1>Hello, world!</h1>
