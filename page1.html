@@ -1,5 +1,10 @@
 <!DOCTYPE html>
 <html>
+  <?php
+$nonce = bin2hex(random_bytes(16)); // generate a random nonce value
+header("Content-Security-Policy: default-src 'none'; style-src 'nonce-" . $nonce . "'"); // set the CSP header with the nonce value
+?>
+
   <link rel="stylesheet" href="page1.css" media="screen">
   <head>
     
@@ -64,7 +69,7 @@ function encodeToString(values) {
 }
 
 
-let bs;
+
 
 
 
@@ -79,8 +84,8 @@ fetch('/users')
 
       let linkUrlC = '';
       let linkUrlO = '';
-let linkUrl_C_O = '';
-let linkUrlA='';
+      let linkUrl_C_O = '';
+      let linkUrlA='';
       if (user.chifaImage && user.chifaImage.data) {
 
 
@@ -129,13 +134,13 @@ console.log(linkUrlC)
         const a3 = document.createElement('a');
 
         a1.href = linkUrlC;
-        a1.innerText = 'View Image';
+        a1.innerText = 'Afficher';
 
         a2.href = linkUrlO;
-        a2.innerText = 'View Image';
+        a2.innerText = 'Afficher';
 
         a3.href = linkUrl_C_O;
-        a3.innerText = 'View Image';
+        a3.innerText = 'Afficher';
 
         td1.appendChild(a1);
         td2.appendChild(a2);
