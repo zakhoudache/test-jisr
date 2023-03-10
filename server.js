@@ -62,9 +62,41 @@ app.use(session({
   saveUninitialized: true
 }));
 
-app.get("/", (req, res) => {
-  res.send("fffffffffffffffff")
-})
+
+const crypto = require('crypto');
+
+// Generate a random 16-byte nonce value
+const nonce = crypto.randomBytes(16).toString('base64');
+
+// Set the Content Security Policy header
+app.use((req, res, next) => {
+  res.setHeader('Content-Security-Policy', `default-src 'none'; style-src 'nonce-${nonce}'`);
+  next();
+});
+
+// Render the HTML file with the nonce value in the style tag
+app.get('/', (req, res) => {
+  const html = `
+    <!DOCTYPE html>
+    <html>
+      <head>
+        <meta charset="utf-8">
+        <title>Example Page</title>
+        <style nonce="${nonce}">
+          h1 {
+            color: red;
+          }
+        </style>
+      </head>
+      <body>
+        <h1>Hello, world!</h1>
+      </body>
+    </html>
+  `;
+  res.send(html);
+});
+
+
 
 app.listen(process.env.PORT||8005,() => {
   console.log(`Server running at http://localhost:${8005}`);
