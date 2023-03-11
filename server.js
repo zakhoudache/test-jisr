@@ -108,7 +108,7 @@ app.use((req, res, next) => {
 app.get('/', (req, res) => {
   res.setHeader('Content-Security-Policy', "style-src 'self' 'unsafe-inline'");
 
-  res.sendFile('page1.html')
+  res.sendFile('test-jisr\\page1.html')
   // const html = `
   //   <!DOCTYPE html>
   //   <html>
@@ -142,7 +142,7 @@ const $ = require('jquery');
 
 app.get('/pharma', function(req, res) {
   // res.setHeader("content_security_policy", `Content-Security-Policy: style-src 'unsafe-inline';`);
-  res.sendFile('page1.html')
+  res.sendFile('test-jisr\\page1.html')
 });
 
 
