@@ -440,7 +440,7 @@ let tempUser = {
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    const dir = 'src/public/Images/';
+    const dir = 'src\\public\\Images\\';
     if (!fs.existsSync(dir)) {
       fs.mkdirSync(dir, { recursive: true }); // create the directory if it doesn't exist
     }
@@ -477,16 +477,16 @@ let sharedData=[];
 // Endpoint for uploading Chifa image and name
 app.post('/chifa', upload.single('image'), async (req, res, next) => {
   const fileUrl = req.body.imageChifa;
-  const fileextension = fileUrl.split('/').pop();
+  const fileextension = fileUrl.split('\\').pop();
   const filePart = fileextension.split('?')[0].split('.');
   const extension = filePart[filePart.length - 1];
-  let localPath = `src/public/Images/${req.body.fileName}/Chifa@${req.body.fileName}.${extension}`;
+  let localPath = `src\\public\\Images\\${req.body.fileName}\\Chifa@${req.body.fileName}.${extension}`;
   let counter = 0;
   while (fs.existsSync(localPath)) {
     counter += 1;
     localPath = path.join(
       __dirname,
-      `src/public/Images/${req.body.fileName}/Chifa@${req.body.fileName}${counter}.${extension}`
+      `src\\public\\Images\\${req.body.fileName}\\Chifa@${req.body.fileName}${counter}.${extension}`
     );
   }
   console.log(req.body.imageChifa, localPath); // log the uploaded file object
@@ -519,16 +519,16 @@ app.post('/ordonnance', upload.single('image'), async (req, res) => {
 
      
   const fileUrl=req.body.imageOrdonnance;
-  const fileextension =fileUrl.split('/').pop();
+  const fileextension =fileUrl.split('\\').pop();
   const filePart = fileextension.split('?')[0].split('.');
   const extension = filePart[filePart.length - 1];
-  let localPathO=`src/public/Images/${req.body.fileName}/Ordonnance@${req.body.fileName}.${extension}`;
+  let localPathO=`src\\public\\Images\\${req.body.fileName}\\Ordonnance@${req.body.fileName}.${extension}`;
   
   
 let counter = 0;
 while (fs.existsSync(localPathO)) {
   counter += 1;
-  localPathO = path.join(__dirname, `src/public/Images/${req.body.fileName}/Ordonnance@${req.body.fileName}${counter}.${extension}`);
+  localPathO = path.join(__dirname, `src\\public\\Images\\${req.body.fileName}\\Ordonnance@${req.body.fileName}${counter}.${extension}`);
 }
 console.log(req.body.imageOrdonnance, localPathO, counter); // log the uploaded file object
 
