@@ -317,7 +317,7 @@ app.get('/src/public/Images/:filename/:filename', (req, res) => {
 // }
 // );
 // Connect to MongoDBconst
-mongoose.connect(`mongodb://mongo:${process.env.mongopassword}@containers-us-west-28.railway.app:5954`);
+mongoose.connect(`mongodb://mongo:${process.env.pass}cluster0.ughawgz.mongodb.net/?retryWrites=true&w=majority`);
 const db = mongoose.connection;
 const { GridFSBucket } = require('mongodb');
   // Create a new GridFSBucket object
