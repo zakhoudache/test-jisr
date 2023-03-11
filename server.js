@@ -24,7 +24,7 @@ global.document = dom.window.document;
 const ejs = require('ejs');
 // const User = require('./models/user');
 
-const mongoose = require('mongoose');
+// const mongoose = require('mongoose');
 const multer = require('multer');
 const upload = multer({ dest: 'public/Images' });
 // var upload = multer({limits: {fileSize: 1064960 },dest:'/uploads/'}).single('picture');
@@ -108,7 +108,7 @@ app.use((req, res, next) => {
 app.get('/', (req, res) => {
   res.setHeader('Content-Security-Policy', "style-src 'self' 'unsafe-inline'");
 
-  res.sendFile('page1.html')
+  res.sendFile('D:\\Jisr_pharma\\page1.html')
   // const html = `
   //   <!DOCTYPE html>
   //   <html>
@@ -142,7 +142,7 @@ const $ = require('jquery');
 
 app.get('/pharma', function(req, res) {
   // res.setHeader("content_security_policy", `Content-Security-Policy: style-src 'unsafe-inline';`);
-  res.sendFile('page1.html')
+  res.sendFile('D:\\Jisr_pharma\\page1.html')
 });
 
 
@@ -317,18 +317,25 @@ app.get('/src/public/Images/:filename/:filename', (req, res) => {
 // }
 // );
 // Connect to MongoDBconst
-mongoose.connect(`mongodb+srv://zhoudache:${process.env.pass}cluster0.ughawgz.mongodb.net/?retryWrites=true&w=majority`);
-const db = mongoose.connection;
+// const mongoose = require('mongoose');ss
+
+// Connect to MongoDB
+// const mongoose = require('mongoose');
+const mongoose = require('mongoose');
 const { GridFSBucket } = require('mongodb');
-  // Create a new GridFSBucket object
-  const bucket = new GridFSBucket(db);
-// const { MongoClient } = require('mongodb');
+
+const uri = 'mongodb://mongo:ppBUD8hmf6puVdcDX5FQ@containers-us-west-28.railway.app:5954';
+
+mongoose.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true });
+
+const db = mongoose.connection;
 
 db.on('error', console.error.bind(console, 'connection error:'));
 db.once('open', function() {
   console.log('Connected to MongoDB');
+  const bucket = new GridFSBucket(db.db);
+  // Your code using the bucket object goes here
 });
-
 
 
 const userSchema = new mongoose.Schema({
