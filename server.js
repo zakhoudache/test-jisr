@@ -26,7 +26,7 @@ const ejs = require('ejs');
 
 // const mongoose = require('mongoose');
 const multer = require('multer');
-const upload = multer({ dest: 'public/Images' });
+const upload = multer({ dest: 'src/public/Images' });
 // var upload = multer({limits: {fileSize: 1064960 },dest:'/uploads/'}).single('picture');
 
 
@@ -440,7 +440,7 @@ let tempUser = {
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    const dir = 'public/Images/';
+    const dir = 'src/public/Images/';
     if (!fs.existsSync(dir)) {
       fs.mkdirSync(dir, { recursive: true }); // create the directory if it doesn't exist
     }
