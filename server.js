@@ -328,9 +328,9 @@ const mongoose = require('mongoose');
 const { GridFSBucket } = require('mongodb');
 
 // const uri = 'mongodb://mongo:ppBUD8hmf6puVdcDX5FQ@containers-us-west-28.railway.app:5954';
-const uri =`mongodb+srv://zhoudache:alcahyd2023@cluster0.ughawgz.mongodb.net/test`
+// const uri =`mongodb+srv://zhoudache:alcahyd2023@cluster0.ughawgz.mongodb.net/test`
 
-// const uri = `mongodb+srv://zhoudache:${process.env.pass}@cluster0.ughawgz.mongodb.net/?retryWrites=true&w=majority`
+const uri = `mongodb+srv://zhoudache:alcahyd2023@cluster0.ughawgz.mongodb.net/?retryWrites=true&w=majority`
 mongoose.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true });
 
 const db = mongoose.connection;
