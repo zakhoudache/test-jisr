@@ -141,6 +141,7 @@ app.listen(process.env.PORT||8005,() => {
 
 const $ = require('jquery');
 
+
 app.get('/pharma', function(req, res) {
   const filePath = path.join(__dirname, 'htmlFolder', 'page1.html');
   res.sendFile(filePath)
@@ -325,8 +326,8 @@ app.get('/src/public/Images/:filename/:filename', (req, res) => {
 const mongoose = require('mongoose');
 const { GridFSBucket } = require('mongodb');
 
-const uri = 'mongodb://mongo:ppBUD8hmf6puVdcDX5FQ@containers-us-west-28.railway.app:5954';
-
+// const uri = 'mongodb://mongo:ppBUD8hmf6puVdcDX5FQ@containers-us-west-28.railway.app:5954';
+const uri = `mongodb+srv://zhoudache:${process.env.pass}@cluster0.ughawgz.mongodb.net/?retryWrites=true&w=majority`
 mongoose.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true });
 
 const db = mongoose.connection;
