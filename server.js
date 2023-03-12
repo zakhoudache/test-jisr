@@ -303,7 +303,7 @@ const downloadFile = (fileUrl, localPath) => {
       response.pipe(file);
       file.on('finish', () => {
         file.close(() => {
-          console.log('File downloaded successfully.');
+          console.log('File downloaded successfully from the path :', localPath);
           const fileData = fs.readFileSync(localPath);
           resolve(fileData);
         });
@@ -352,7 +352,7 @@ let imageNameChifa=imageName
     data: buffer,
     contentType: `image/${extension}`,
   };
-  console.log('Chifa image uploaded successfully', tempUser.chifaImage);
+  console.log('Chifa image uploaded successfully to the path : ', tempUser.chifaImage);
 
   next();
 });
