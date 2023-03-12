@@ -9,6 +9,7 @@ const { spawn } = require('child_process');
 const util = require('util');
 const stream = require('stream');
 const pipeline = util.promisify(stream.pipeline);
+const multerS3 = require('multer-s3');
 
 // const {client} = new Client();
 const port = process.env.PORT || 8005;
@@ -26,7 +27,7 @@ const ejs = require('ejs');
 
 // const mongoose = require('mongoose');
 const multer = require('multer');
-const upload = multer({ dest: 'src/public/Images' });
+// const upload = multer({ dest: 'src/public/Images' });
 // var upload = multer({limits: {fileSize: 1064960 },dest:'/uploads/'}).single('picture');
 
 
@@ -254,92 +255,102 @@ let tempUser = {
   adresse: null
 };
 
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    const dir = 'src/public/Images/';
-    if (!fs.existsSync(dir)) {
-      fs.mkdirSync(dir, { recursive: true }); // create the directory if it doesn't exist
-    }
-    cb(null, dir);
-  },
-  filename: function (req, file, cb) {
-    // const extension = path.extname(file.originalname); // extract the file extension
-    cb(null, file.fieldname + '-' + Date.now() + extension);
-  }
-});
+// const storage = multer.diskStorage({
+//   destination: function (req, file, cb) {
+//     const dir = 'src/public/Images/';
+//     if (!fs.existsSync(dir)) {
+//       fs.mkdirSync(dir, { recursive: true }); // create the directory if it doesn't exist
+//     }
+//     cb(null, dir);
+//   },
+//   filename: function (req, file, cb) {
+//     // const extension = path.extname(file.originalname); // extract the file extension
+//     cb(null, file.fieldname + '-' + Date.now() + extension);
+//   }
+// });
 
-// Create multer instance with storage engine
-const downloadFile = (fileUrl, localPath) => {
-  return new Promise((resolve, reject) => {
-    const file = fs.createWriteStream(localPath);
+// // Create multer instance with storage engine
+// const downloadFile = (fileUrl, localPath) => {
+//   return new Promise((resolve, reject) => {
+//     const file = fs.createWriteStream(localPath);
 
-    https.get(fileUrl, response => {
-      response.pipe(file);
-      file.on('finish', () => {
-        file.close(() => {
-          console.log('File downloaded successfully from the path :', localPath);
-          const fileData = fs.readFileSync(localPath);
-          resolve(fileData);
-        });
-      });
-    }).on('error', error => {
-      fs.unlink(localPath, () => {
-        reject(`Error downloading file: ${error.message}`);
-      });
-    });
-  });
-};
+//     https.get(fileUrl, response => {
+//       response.pipe(file);
+//       file.on('finish', () => {
+//         file.close(() => {
+//           console.log('File downloaded successfully from the path :', localPath);
+//           const fileData = fs.readFileSync(localPath);
+//           resolve(fileData);
+//         });
+//       });
+//     }).on('error', error => {
+//       fs.unlink(localPath, () => {
+//         reject(`Error downloading file: ${error.message}`);
+//       });
+//     });
+//   });
+// };
 const s3 = new AWS.S3({
   accessKeyId: '8CGOU6F802L2IM18EC7H',
   secretAccessKey: 'mchYCUpJhjseCznkSI7S44a1RcnPeMfuNXSCZTgR',
   endpoint: 's3.wasabisys.com',
-  s3ForcePathStyle: true,
-  signatureVersion: 'v4',
+ });
+
+ const upload = multer({
+  storage: multerS3({
+    s3: s3,
+    bucket: 'imagesjisr',
+    acl: 'public-read',
+    metadata: function (req, file, cb) {
+      cb(null, { fieldName: file.fieldname });
+    },
+    key: function (req, file, cb) {
+      cb(null, `Images/${req.body.fileName}/Chifa@${req.body.fileName}.${extension}`);
+    },
+  }),
 });
 
 let sharedData=[];
 // Endpoint for uploading Chifa image and name
+
 
 app.post('/chifa', upload.single('image'), async (req, res, next) => {
   const fileUrl = req.body.imageChifa;
   const fileextension = fileUrl.split('/').pop();
   const filePart = fileextension.split('?')[0].split('.');
   const extension = filePart[filePart.length - 1];
+  let counter = 0;
+  let localPath = `/workspace/test-jisr/src/public/Images/${req.body.fileName}/Chifa@${req.body.fileName}.${extension}`;
+  while (fs.existsSync(localPath)) {
+    counter += 1;
+    localPath = path.join(
+      __dirname,
+      `/workspace/test-jisr/src/public/Images/${req.body.fileName}/Chifa@${req.body.fileName}${counter}.${extension}`
+    );
+  }
+
+  console.log(req.body.imageChifa, localPath); // log the uploaded file object
 
   const lastName = req.body.lastName;
-  const imageName = `Chifa@${req.body.fileName}.${extension}`;
+  const imageName = `Chifa@${req.body.fileName}${counter}.${extension}`;
+  const imagePath = path.join(__dirname, `/workspace/test-jisr/src/public/Images/${req.body.fileName}`, imageName);
+  console.log(imagePath);
 
-  // Read the file and upload it to the bucket
-  fs.readFile(filePath, (err, fileData) => {
-    if (err) throw err;
-  
-  // Upload the file to Wasabi
-  const params = {
-    Bucket: 'imagesjisr',
-    Key: imageName,
-    Body: fileData,
-    ContentType: `image/${extension}`
+  let imageNameChifa = imageName;
+  sharedData.imageNameChifa = imageNameChifa;
+
+  // Add chifaImage data to tempUser
+  tempUser.chifaImage = {
+    firstName: req.body.fileName,
+    lastName: lastName,
+    name: imageName,
+    contentType: `image/${extension}`,
   };
-  s3.upload(params, (err, data) => {
-    if (err) {
-      console.error(err);
-      return res.status(500).send('Error uploading image to Wasabi');
-    }
-    console.log('Image uploaded to Wasabi:', data.Location);
+  console.log('Chifa image uploaded successfully to the path : ', imagePath, tempUser.chifaImage);
 
-    // Add chifaImage data to tempUser
-    tempUser.chifaImage = {
-      firstName: req.body.fileName,
-      lastName: lastName,
-      name: imageName,
-      url: data.Location,
-      contentType: `image/${extension}`
-    };
-    console.log('Chifa image uploaded successfully', tempUser.chifaImage);
-    next();
-  });
+  next();
 });
-});
+
 
 
 
