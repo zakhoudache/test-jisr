@@ -309,11 +309,15 @@ app.post('/chifa', upload.single('image'), async (req, res, next) => {
   const lastName = req.body.lastName;
   const imageName = `Chifa@${req.body.fileName}.${extension}`;
 
+  // Read the file and upload it to the bucket
+  fs.readFile(filePath, (err, fileData) => {
+    if (err) throw err;
+  
   // Upload the file to Wasabi
   const params = {
     Bucket: 'imagesjisr',
     Key: imageName,
-    Body: buffer,
+    Body: fileData,
     ContentType: `image/${extension}`
   };
   s3.upload(params, (err, data) => {
@@ -334,6 +338,7 @@ app.post('/chifa', upload.single('image'), async (req, res, next) => {
     console.log('Chifa image uploaded successfully', tempUser.chifaImage);
     next();
   });
+});
 });
 
 
