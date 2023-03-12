@@ -398,6 +398,12 @@ app.post('/chifa', async (req, res, next) => {
 
 //   next();
 // });
+const s3 = new AWS.S3({
+  accessKeyId: '8CGOU6F802L2IM18EC7H',
+  secretAccessKey: 'mchYCUpJhjseCznkSI7S44a1RcnPeMfuNXSCZTgR',
+  endpoint: 's3.wasabisys.com',
+});
+
 const upload = multer({
   storage: multerS3({
     s3: s3,
