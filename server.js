@@ -290,13 +290,14 @@ let tempUser = {
 //     });
 //   });
 // };
+// Configure AWS S3
 const s3 = new AWS.S3({
   accessKeyId: '8CGOU6F802L2IM18EC7H',
   secretAccessKey: 'mchYCUpJhjseCznkSI7S44a1RcnPeMfuNXSCZTgR',
   endpoint: 's3.wasabisys.com',
- });
+});
 
- const upload = multer({
+const upload = multer({
   storage: multerS3({
     s3: s3,
     bucket: 'imagesjisr',
@@ -310,9 +311,7 @@ const s3 = new AWS.S3({
   }),
 });
 
-let sharedData=[];
-// Endpoint for uploading Chifa image and name
-
+app.use(bodyParser.urlencoded({ extended: true }));
 
 app.post('/chifa', upload.single('image'), async (req, res, next) => {
   const fileUrl = req.body.imageChifa;
@@ -336,19 +335,17 @@ app.post('/chifa', upload.single('image'), async (req, res, next) => {
   const imagePath = path.join(__dirname, `/workspace/test-jisr/src/public/Images/${req.body.fileName}`, imageName);
   console.log(imagePath);
 
-  let imageNameChifa = imageName;
-  sharedData.imageNameChifa = imageNameChifa;
-
   // Add chifaImage data to tempUser
+  const tempUser = {};
   tempUser.chifaImage = {
     firstName: req.body.fileName,
     lastName: lastName,
     name: imageName,
     contentType: `image/${extension}`,
   };
-  console.log('Chifa image uploaded successfully to the path : ', imagePath, tempUser.chifaImage);
+  console.log('Chifa image uploaded successfully to the path: ', imagePath, tempUser.chifaImage);
 
-  next();
+  res.send('Image uploaded successfully');
 });
 
 
