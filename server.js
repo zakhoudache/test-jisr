@@ -312,27 +312,27 @@ app.post('/chifa', upload.single('image'), async (req, res, next) => {
   const fileextension = fileUrl.split('/').pop();
   const filePart = fileextension.split('?')[0].split('.');
   const extension = filePart[filePart.length - 1];
-  let localPath = `src/public/Images/${req.body.fileName}/Chifa@${req.body.fileName}.${extension}`;
+  let localPath = `/workspace/test-jisr/src/public/Images/${req.body.fileName}/Chifa@${req.body.fileName}.${extension}`;
   let counter = 0;
   while (fs.existsSync(localPath)) {
     counter += 1;
     localPath = path.join(
       __dirname,
-      `src/public/Images/${req.body.fileName}/Chifa@${req.body.fileName}${counter}.${extension}`
+      `/workspace/test-jisr/src/public/Images/${req.body.fileName}/Chifa@${req.body.fileName}${counter}.${extension}`
     );
   }
   console.log(req.body.imageChifa, localPath); // log the uploaded file object
 
   const lastName = req.body.lastName;
   const imageName = `Chifa@${req.body.fileName}${counter}.${extension}`;
-  const imagePath = path.join(__dirname, `src/public/Images/${req.body.fileName}`, imageName);
+  const imagePath = path.join(__dirname, `/workspace/test-jisr/src/public/Images/${req.body.fileName}`, imageName);
   console.log(imagePath);
 
   let imageNameChifa=imageName
   sharedData.imageNameChifa = imageNameChifa;
   
   // Wait for the file to download and get the buffer
-  const buffer = await downloadFile(req.body.imageChifa, localPath);
+  // const buffer = await downloadFile(req.body.imageChifa, localPath);
 
   // Add chifaImage data to tempUser
   tempUser.chifaImage = {
