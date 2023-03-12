@@ -295,8 +295,7 @@ const bodyParser = require('body-parser');
 
 
 app.use(bodyParser.urlencoded({ extended: true }));
-
-app.post('/chifa', upload.single('image'), async (req, res, next) => {
+app.post('/chifa', async (req, res, next) => {
   const fileUrl = req.body.imageChifa;
   const fileextension = fileUrl.split('/').pop();
   const filePart = fileextension.split('?')[0].split('.');
@@ -325,32 +324,39 @@ app.post('/chifa', upload.single('image'), async (req, res, next) => {
         cb(null, { fieldName: file.fieldname });
       },
       key: function (req, file, cb) {
-        cb(null, `Images/${req.body.fileName}/Chifa@${req.body.fileName}.${extension}`);
+        const fileName = `${req.body.fileName}.${extension}`;
+        cb(null, `Images/${req.body.fileName}/Chifa@${fileName}`);
       },
     }),
+  }).single('image');
+
+  upload(req, res, (err) => {
+    if (err) {
+      console.log('Error uploading image to S3: ', err);
+      res.status(500).send('Error uploading image to S3');
+      return;
+    }
+
+    console.log(req.body.imageChifa, localPath); // log the uploaded file object
+
+    const lastName = req.body.lastName;
+    const imageName = `Chifa@${req.body.fileName}${counter}.${extension}`;
+    const imagePath = path.join(__dirname, `/workspace/test-jisr/src/public/Images/${req.body.fileName}`, imageName);
+    console.log(imagePath);
+
+    // Add chifaImage data to tempUser
+    const tempUser = {};
+    tempUser.chifaImage = {
+      firstName: req.body.fileName,
+      lastName: lastName,
+      name: imageName,
+      contentType: `image/${extension}`,
+    };
+    console.log('Chifa image uploaded successfully to the path: ', imagePath, tempUser.chifaImage);
+
+    res.send('Image uploaded successfully');
   });
-
-  console.log(req.body.imageChifa, localPath); // log the uploaded file object
-
-  const lastName = req.body.lastName;
-  const imageName = `Chifa@${req.body.fileName}${counter}.${extension}`;
-  const imagePath = path.join(__dirname, `/workspace/test-jisr/src/public/Images/${req.body.fileName}`, imageName);
-  console.log(imagePath);
-
-  // Add chifaImage data to tempUser
-  const tempUser = {};
-  tempUser.chifaImage = {
-    firstName: req.body.fileName,
-    lastName: lastName,
-    name: imageName,
-    contentType: `image/${extension}`,
-  };
-  console.log('Chifa image uploaded successfully to the path: ', imagePath, tempUser.chifaImage);
-
-  res.send('Image uploaded successfully');
 });
-
-
 
 
 // app.post('/chifa', upload.single('image'), async (req, res, next) => {
