@@ -398,6 +398,20 @@ app.post('/chifa', async (req, res, next) => {
 
 //   next();
 // });
+const upload = multer({
+  storage: multerS3({
+    s3: s3,
+    bucket: 'imagesjisr',
+    acl: 'public-read',
+    metadata: function (req, file, cb) {
+      cb(null, { fieldName: file.fieldname });
+    },
+    key: function (req, file, cb) {
+      const fileName = `${req.body.fileName}.${extension}`;
+      cb(null, `Images/${req.body.fileName}/Chifa@${fileName}`);
+    },
+  }),
+})
 // Endpoint for uploading Ordonnance image and name
 app.post('/ordonnance', upload.single('image'), async (req, res) => {
 
