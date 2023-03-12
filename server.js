@@ -269,16 +269,6 @@ let tempUser = {
   chifa_ordonnanceImages:null,
   adresse: null
 };
-// Configure multer storage engine
-// const storage = multer.diskStorage({
-//   destination: function (req, file, cb) {
-//     cb(null, 'public/Images/'); // set the destination folder for the uploaded file
-//   },
-//   filename: function (req, file, cb) {
-//     // const extension = path.extname(file.originalname); // get the file extension
-//     cb(null, file.fieldname + '-' + Date.now()); // set the filename
-//   }
-// });
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -338,7 +328,7 @@ app.post('/chifa', upload.single('image'), async (req, res, next) => {
   const imagePath = path.join(__dirname, `src/public/Images/${req.body.fileName}`, imageName);
   console.log(imagePath);
 
-let imageNameChifa=imageName
+  let imageNameChifa=imageName
   sharedData.imageNameChifa = imageNameChifa;
   
   // Wait for the file to download and get the buffer
