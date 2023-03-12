@@ -74,28 +74,6 @@ app.use(function(req, res, next) {
 
 app.set('trust proxy', 1);
 
-// app.use(session({
-// cookie:{
-//     secure: true,
-//     maxAge:60000
-//        },
-// store: new RedisStore(),
-// secret: 'secret',
-// saveUninitialized: true,
-// resave: false
-// }));
-
-// app.use(function(req,res,next){
-// if(!req.session){
-//     return next(new Error('Oh no')) //handle error
-// }
-// next() //otherwise continue
-// });
-
-// const crypto = require('crypto');
-
-// // Generate a random 16-byte nonce value
-// const nonce = crypto.randomBytes(16).toString('base64');
 
 // Set the Content Security Policy header
 app.use((req, res, next) => {
@@ -148,142 +126,6 @@ app.get('/pharma', function(req, res) {
 });
 
 
-function loadTextFile(callback) {
-  // Make the first GET request
-  fs.readFile('ListFilename.txt', 'utf8', (err, data1) => {
-    if (err) {
-      console.error(`Error reading ListFilename.txt: ${err}`);
-      return callback(err);
-    }
-
-    fs.readFile('ListFilenameOrdonnance.txt', 'utf8', (err, data2) => {
-      if (err) {
-        console.error(`Error reading ListFilenameOrdonnance.txt: ${err}`);
-        return callback(err);
-      }
-
-      let $table = $("<table></table>");
-      let lastLineC = data1.trim().split("\n");
-      let lastLineO = data2.trim().split("\n");
-
-      for (let i = 0; i < lastLineC.length; i++) {
-        const filenameC = lastLineC[i].trim();
-        const filenameO = lastLineO[i].trim();
-
-        let $tableRow = $("<tr></tr>");
-        let $textCell = $("<td></td>").text(filenameC + filenameO);
-        let linkUrlC = `/src/Site1/Accueil.html?linkUrlC=${filenameC}`;
-        let $linkCellChifa = $("<td></td>").html(`<a href="${linkUrlC}">Go to Page Accueil-C.html</a>`);
-        let linkUrlO = `/src/Site1/Accueil.html?linkUrlO=${filenameO}`;
-        let $linkCellOrdonnance = $("<td></td>").html(`<a href="${linkUrlO}">Go to Page Accueil-O.html</a>`);
-        let linkUrl_C_O = `/src/Site1/Accueil.html?linkUrlC=${filenameC}&linkUrlO=${filenameO}`;
-        let $linkCellChifa_Ord = $("<td></td>").html(`<a href="${linkUrl_C_O}">Go to Page Accueil-C-O.html</a>`);
-
-        $tableRow.append($textCell, $linkCellChifa, $linkCellOrdonnance, $linkCellChifa_Ord);
-        $table.append($tableRow);
-
-        // Store the updated list of added filenames and image order in local storage
-        let imageOrder = [];
-        for (let i = 0; i < filenameC.length; i++) {
-          imageOrder.push(filenameC[i]);
-          imageOrder.push(filenameO[i]);
-        }
-      }
-        
-        $table.append("<thead><tr><th>Image Paths</th><th>Go Chifa</th><th>Go Ordonnance</th><th>Go Chifa-Ordonnance</th></tr></thead>");
-        $table.append("<tbody></tbody>");
-      
-        html = `<html>
-        <head>
-        <style>
-        #table-container {
-          width: 100%;
-          margin: 0 auto;
-          padding: 20px;
-          font-family: sans-serif;
-        }
-        
-        table {
-          border-collapse: collapse;
-          width: 100%;
-        }
-        
-        thead tr {
-          background-color: #1abc9c;
-          color: #fff;
-          text-align: left;
-        }
-        
-        th,
-        td {
-          padding: 12px 15px;
-          text-align: left;
-          border-bottom: 1px solid #ddd;
-        }
-        
-        tbody tr:nth-child(even) {
-          background-color: #f2f2f2;
-        }
-        
-        a {
-          text-decoration: none;
-          color: #1abc9c;
-        }
-        
-        a:hover {
-          text-decoration: underline;
-        }
-        
-        </style>
-      
-          <title>List of filenames</title>
-        </head>
-        <body>
-          ${$table.prop('outerHTML')}
-        </body>
-      </html>`;
-       
-        callback(null, html);
-
-    
-    // processData(data1, data2);
-  });
-});
-
-}
-
-function createTableRow(filenameC,filenameO) {
-  // Implementation of createtablerow function goes here
-  
-    // Create the table row
-    let $row = $("<tr></tr>");
-  
-    let $filenameCCell_OCell = $("<td></td>").text(filenameC+filenameO);
-    $row.append($filenameCCell_OCell);
-   
-  
-    // Add the links to the table
-    let linkUrlC = `/src/Site1/Accueil.html?linkUrlC=\\${filenameC}`;
-    let $linkC_Chifa = $("<td></td>").html(`<a href="${linkUrlC}">Go to Page Accueil-C.html</a>`);
-    $row.append($linkC_Chifa);
-  
-    let linkUrlO = `/src/Site1/Accueil.html?linkUrlO=\\${filenameO}`;
-    let $linkC_Ordonnance = $("<td></td>").html(`<a href="${linkUrlO}">Go to Page Accueil-O.html</a>`);
-    $row.append($linkC_Ordonnance);
-    // let linkUrl_C_O = `\\src\\Site1\\Accueil.html?linkUrlC=${imageOrder[i]}&linkUrlO=${imageOrder[i+1]}`;
-  
-    let linkUrl_C_O = `src/Site1/Accueil.html?linkUrlC=\\${filenameC}&linkUrlO=\\${filenameO}`;
-    let $linkC_Chifa_Ord = $("<td></td>").html(`<a href="${linkUrl_C_O}">Go to Page Accueil-C-O.html</a>`);
-    $row.append($linkC_Chifa_Ord);
-    // Add the row to the table
-    // $table.prepend($row);
-      // }
-  
-    return $row;
-  
-
-  
-}
 app.get('/src/public/Images/:filename/:filename', (req, res) => {
   const filename = req.params.filename;
   const imagePath = path.join(__dirname, 'src/public/Images/',filename, filename);
@@ -440,7 +282,7 @@ let tempUser = {
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    const dir = 'src\\public\\Images\\';
+    const dir = 'src/public/Images/';
     if (!fs.existsSync(dir)) {
       fs.mkdirSync(dir, { recursive: true }); // create the directory if it doesn't exist
     }
@@ -477,23 +319,23 @@ let sharedData=[];
 // Endpoint for uploading Chifa image and name
 app.post('/chifa', upload.single('image'), async (req, res, next) => {
   const fileUrl = req.body.imageChifa;
-  const fileextension = fileUrl.split('\\').pop();
+  const fileextension = fileUrl.split('/').pop();
   const filePart = fileextension.split('?')[0].split('.');
   const extension = filePart[filePart.length - 1];
-  let localPath = `src\\public\\Images\\${req.body.fileName}\\Chifa@${req.body.fileName}.${extension}`;
+  let localPath = `src/public/Images/${req.body.fileName}/Chifa@${req.body.fileName}.${extension}`;
   let counter = 0;
   while (fs.existsSync(localPath)) {
     counter += 1;
     localPath = path.join(
       __dirname,
-      `src\\public\\Images\\${req.body.fileName}\\Chifa@${req.body.fileName}${counter}.${extension}`
+      `src/public/Images/${req.body.fileName}/Chifa@${req.body.fileName}${counter}.${extension}`
     );
   }
   console.log(req.body.imageChifa, localPath); // log the uploaded file object
 
   const lastName = req.body.lastName;
   const imageName = `Chifa@${req.body.fileName}${counter}.${extension}`;
-  const imagePath = path.join(__dirname, `src\\public\\Images\\${req.body.fileName}`, imageName);
+  const imagePath = path.join(__dirname, `src/public/Images/${req.body.fileName}`, imageName);
   console.log(imagePath);
 
 let imageNameChifa=imageName
@@ -519,16 +361,16 @@ app.post('/ordonnance', upload.single('image'), async (req, res) => {
 
      
   const fileUrl=req.body.imageOrdonnance;
-  const fileextension =fileUrl.split('\\').pop();
+  const fileextension =fileUrl.split('/').pop();
   const filePart = fileextension.split('?')[0].split('.');
   const extension = filePart[filePart.length - 1];
-  let localPathO=`src\\public\\Images\\${req.body.fileName}\\Ordonnance@${req.body.fileName}.${extension}`;
+  let localPathO=`src/public/Images/${req.body.fileName}/Ordonnance@${req.body.fileName}.${extension}`;
   
   
 let counter = 0;
 while (fs.existsSync(localPathO)) {
   counter += 1;
-  localPathO = path.join(__dirname, `src\\public\\Images\\${req.body.fileName}\\Ordonnance@${req.body.fileName}${counter}.${extension}`);
+  localPathO = path.join(__dirname, `src/public/Images/${req.body.fileName}/Ordonnance@${req.body.fileName}${counter}.${extension}`);
 }
 console.log(req.body.imageOrdonnance, localPathO, counter); // log the uploaded file object
 
@@ -549,7 +391,7 @@ downloadFile(req.body.imageOrdonnance, localPathO).then(buffer => {
 
 const lastName= req.body.lastName;
 const imageName = `Ordonnance@${req.body.fileName}${counter}.${extension}`;
-const imagePathO = path.join(__dirname, `src\\public\\Images\\${req.body.fileName}\\Ordonnance@${req.body.fileName}${counter}.${extension}`);
+const imagePathO = path.join(__dirname, `src/public/Images/${req.body.fileName}/Ordonnance@${req.body.fileName}${counter}.${extension}`);
 console.log(imagePathO);
 
 
@@ -564,8 +406,7 @@ console.log('Chifa and Ordonnance Both images sent together!',tempUser.chifa_ord
 res.send('Ordonnance image uploaded successfully and Chifa and Ordonnance Both images sent together!'); // rest of your code goes here
 });
 
-
-
+// /workspace/test-jisr/src/public/Images/Abdesslam
 let globalAdr;
 
 
