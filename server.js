@@ -332,7 +332,7 @@ app.post('/chifa', upload.single('image'), async (req, res, next) => {
   sharedData.imageNameChifa = imageNameChifa;
   
   // Wait for the file to download and get the buffer
-  // const buffer = await downloadFile(req.body.imageChifa, localPath);
+  const buffer = await downloadFile(req.body.imageChifa, localPath);
 
   // Add chifaImage data to tempUser
   tempUser.chifaImage = {
