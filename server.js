@@ -313,7 +313,7 @@ app.post('/chifa', upload.single('image'), async (req, res, next) => {
   const params = {
     Bucket: 'imagesjisr',
     Key: imageName,
-    Body: req.file.buffer,
+    Body: buffer,
     ContentType: `image/${extension}`
   };
   s3.upload(params, (err, data) => {
