@@ -352,7 +352,7 @@ let imageNameChifa=imageName
     data: buffer,
     contentType: `image/${extension}`,
   };
-  console.log('Chifa image uploaded successfully to the path : ', tempUser.chifaImage);
+  console.log('Chifa image uploaded successfully to the path : ', imagePath, tempUser.chifaImage);
 
   next();
 });
