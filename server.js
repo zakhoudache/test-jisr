@@ -309,33 +309,7 @@ app.post('/chifa', async (req, res, next) => {
       `/workspace/test-jisr/src/public/Images/${req.body.fileName}/Chifa@${req.body.fileName}${counter}.${extension}`
     );
   }
-  const s3 = new AWS.S3({
-    accessKeyId: '8CGOU6F802L2IM18EC7H',
-    secretAccessKey: 'mchYCUpJhjseCznkSI7S44a1RcnPeMfuNXSCZTgR',
-    endpoint: 's3.wasabisys.com',
-  });
-  
-  const upload = multer({
-    storage: multerS3({
-      s3: s3,
-      bucket: 'imagesjisr',
-      acl: 'public-read',
-      metadata: function (req, file, cb) {
-        cb(null, { fieldName: file.fieldname });
-      },
-      key: function (req, file, cb) {
-        const fileName = `${req.body.fileName}.${extension}`;
-        cb(null, `Images/${req.body.fileName}/Chifa@${fileName}`);
-      },
-    }),
-  }).single('image');
-
-  upload(req, res, (err) => {
-    if (err) {
-      console.log('Error uploading image to S3: ', err);
-      res.status(500).send('Error uploading image to S3');
-      return;
-    }
+ 
 
     console.log(req.body.imageChifa, localPath); // log the uploaded file object
 
@@ -343,7 +317,35 @@ app.post('/chifa', async (req, res, next) => {
     const imageName = `Chifa@${req.body.fileName}${counter}.${extension}`;
     const imagePath = path.join(__dirname, `/workspace/test-jisr/src/public/Images/${req.body.fileName}`, imageName);
     console.log(imagePath);
-
+    const s3 = new AWS.S3({
+      accessKeyId: '8CGOU6F802L2IM18EC7H',
+      secretAccessKey: 'mchYCUpJhjseCznkSI7S44a1RcnPeMfuNXSCZTgR',
+      endpoint: 's3.wasabisys.com',
+    });
+    
+    const upload = multer({
+      storage: multerS3({
+        s3: s3,
+        bucket: 'imagesjisr',
+        acl: 'public-read',
+        metadata: function (req, file, cb) {
+          cb(null, { fieldName: file.fieldname });
+        },
+        key: function (req, file, cb) {
+          const fileName = `${req.body.fileName}.${extension}`;
+          cb(null, `Images/${req.body.fileName}/Chifa@${fileName}`);
+        },
+      }),
+    }).single('image');
+  
+    upload(req, res, (err) => {
+      if (err) {
+        console.log('Error uploading image to S3: ', err);
+        res.status(500).send('Error uploading image to S3');
+        return;
+      }else{
+        console.log('uploading image to S3: ');
+      }
     // Add chifaImage data to tempUser
     const tempUser = {};
     tempUser.chifaImage = {
