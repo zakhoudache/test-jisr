@@ -27,7 +27,7 @@ const ejs = require('ejs');
 
 // const mongoose = require('mongoose');
 const multer = require('multer');
-// const upload = multer({ dest: 'src/public/Images' });
+const upload_ = multer({ dest: 'src/public/Images' });
 // var upload = multer({limits: {fileSize: 1064960 },dest:'/uploads/'}).single('picture');
 
 
@@ -292,69 +292,144 @@ let tempUser = {
 // };
 // Configure AWS S3
 const bodyParser = require('body-parser');
+// const Busboy = require('busboy');
+const BUCKET_NAME = '';
+const IAM_USER_KEY = '8CGOU6F802L2IM18EC7H';
+const IAM_USER_SECRET = 'mchYCUpJhjseCznkSI7S44a1RcnPeMfuNXSCZTgR';
+
+// function uploadToS3(file) {
+//   let s3bucket = new AWS.S3({
+//     accessKeyId: IAM_USER_KEY,
+//     secretAccessKey: IAM_USER_SECRET,
+//     Bucket: BUCKET_NAME
+//   });
+//   s3bucket.createBucket(function () {
+//       var params = {
+//         Bucket: BUCKET_NAME,
+//         Key: file.name,
+//         Body: file.data,
+//         ACL:'public-read'
+//       };
+//       s3bucket.upload(params, function (err, data) {
+//         if (err) {
+//           console.log('error in callback');
+//           console.log(err);
+//         }
+//         console.log('success');
+//         console.log(data);
+//       });
+//   });
+// }
+
 
 
 app.use(bodyParser.urlencoded({ extended: true }));
 const s3 = new AWS.S3({
   accessKeyId: '8CGOU6F802L2IM18EC7H',
   secretAccessKey: 'mchYCUpJhjseCznkSI7S44a1RcnPeMfuNXSCZTgR',
+  // region: 'us-west-1',
+  
   endpoint: 's3.wasabisys.com',
+  s3ForcePathStyle: true,
 });
 
-const upload = multer({
-  storage: multerS3({
-    s3: s3,
-    bucket: 'imagesjisr',
-    acl: 'public-read',
-    metadata: function (req, file, cb) {
-      cb(null, { fieldName: file.fieldname });
-    },
-    key: function (req, file, cb) {
-      const extension = file.originalname.split('.').pop();
-      const fileName = `${req.body.fileName}.${extension}`;
-      cb(null, `Images/${req.body.fileName}/Chifa@${fileName}`);
-    },
-  }),
-}).single('image');
+// configure multer to store the file in memory
+const upload = multer({ storage: multer.memoryStorage() });
+sharedData=[];
+app.post('/chifa',  upload.single('image'), (req, res, next) => {
 
-app.post('/chifa', async (req, res, next) => {
   const fileUrl = req.body.imageChifa;
   const fileextension = fileUrl.split('/').pop();
   const filePart = fileextension.split('?')[0].split('.');
   const extension = filePart[filePart.length - 1];
+
   let counter = 0;
-  let localPath = `/workspace/test-jisr/src/public/Images/${req.body.fileName}/Chifa@${req.body.fileName}.${extension}`;
-  while (fs.existsSync(localPath)) {
-    counter += 1;
-    localPath = path.join(
-      __dirname,
-      `/workspace/test-jisr/src/public/Images/${req.body.fileName}/Chifa@${req.body.fileName}${counter}.${extension}`
-    );
-  }
+ let imageP = `imagesjisr/${req.body.fileName}/Chifa@${req.body.fileName}.${extension}`;
+while (checkObjectExists(imageP)) {
+  counter += 1;
+  imageP = `imagesjisr/${req.body.fileName}/Chifa@${req.body.fileName}${counter}.${extension}`;
+}
 
+
+
+  // let localPath = `/workspace/test-jisr/src/public/Images/${req.body.fileName}/Chifa@${req.body.fileName}.${extension}`;
+  // while (fs.existsSync(localPath)) {
+  //   counter += 1;
+  //   localPath = path.join(
+  //     __dirname,
+  //     `/workspace/test-jisr/src/public/Images/${req.body.fileName}/Chifa@${req.body.fileName}${counter}.${extension}`
+  //   );
+  // }
+  
   console.log(req.body.imageChifa, localPath); // log the uploaded file object
+    const lastName = req.body.lastName;
+  const imageName = `Chifa@${req.body.fileName}${counter}.${extension}`;
+  const imagePath = path.join(__dirname, `/workspace/test-jisr/src/public/Images/${req.body.fileName}`, imageName);
+  console.log(imagePath);
 
-  upload(req, res, (err) => {
+  let imageNameChifa=imageName;
+  sharedData.imageNameChifa = imageNameChifa;
+  
+
+   // get the file buffer and filename from the request
+   // download the image from the URL
+   request(fileUrl, { encoding: null }, (err, response, buffer) => {
     if (err) {
-      console.log('Error uploading image to S3: ', err);
-      res.status(500).send('Error uploading image to S3');
+      console.error(err);
+      res.status(500).send('Error downloading file from URL');
       return;
     }
+    
+   
+ // upload the file to Wasabi
+const params = {
+  Bucket: `imagesjisr/${req.body.fileName}`,
+  Key: `Chifa@${req.body.fileName}${counter}${extension}` ,
+  Body: buffer,
+  ContentType: `image/${extension}`,
+};
 
-    // Add chifaImage data to tempUser
-    const tempUser = {};
-    tempUser.chifaImage = {
-      firstName: req.body.fileName,
-      lastName: req.body.lastName,
-      name: `${req.body.fileName}${counter}.${extension}`,
-      contentType: `image/${extension}`,
-    };
-
-    console.log('Chifa image uploaded successfully to S3: ', tempUser.chifaImage);
-
-    res.send('Image uploaded successfully');
-  });
+s3.upload(params, (err, data) => {
+  if (err) {
+    console.error(err);
+    res.status(500).send('Error uploading file to Wasabi');
+  } else {
+    console.log(`File uploaded to ${data.Location}`);
+    res.status(200).send('File uploaded to Wasabi');
+  }
+  
 });
+
+    // Wait for the file to download and get the buffer
+  // const buffer = await downloadFile(req.body.imageChifa, localPath);
+// 
+  // Add chifaImage data to tempUser
+  tempUser.chifaImage = {
+    firstName: req.body.fileName,
+    lastName: lastName,
+    name: imageName,
+    // data: buffer,
+    contentType: `image/${extension}`,
+  };
+    console.log('Chifa image uploaded successfully to S3: ', tempUser.chifaImage);
+   });
+
+
+      });
+    
+
+      async function checkObjectExists(key) {
+        try {
+          await s3.headObject({ Bucket: 'imagesjisr', Key: key }).promise();
+          return true;
+        } catch (err) {
+          if (err.statusCode === 404) {
+            return false;
+          }
+          throw err;
+        }
+      }
+
 
 
 // app.post('/chifa', upload.single('image'), async (req, res, next) => {
@@ -398,7 +473,7 @@ app.post('/chifa', async (req, res, next) => {
 // });
 
 // Endpoint for uploading Ordonnance image and name
-app.post('/ordonnance', upload.single('image'), async (req, res) => {
+app.post('/ordonnance', upload_.single('image'), async (req, res) => {
 
      
   const fileUrl=req.body.imageOrdonnance;
