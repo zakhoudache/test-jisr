@@ -37,7 +37,7 @@ const upload = multer({ dest: 'src/public/Images' });
 
 const base64Img = require('base64-img');
 
-
+const AWS = require('aws-sdk');
 
 
 app.use(express.static(path.join(__dirname, '')));
@@ -88,23 +88,7 @@ app.get('/', (req, res) => {
 
   const filePath = path.join(__dirname, 'htmlFolder', 'page1.html');
   res.sendFile(filePath)
-  // const html = `
-  //   <!DOCTYPE html>
-  //   <html>
-  //     <head>
-  //       <meta charset="utf-8">
-  //       <title>Example Page</title>
-  //       #inline-style {
-  //         background: red;
-  //       }
-        
-  //     </head>
-  //     <body>
-  //       <h1>Hello, world!</h1>
-  //     </body>
-  //   </html>
-  // `;
-  // res.send(html);
+  
 });
 
 
@@ -305,47 +289,94 @@ const downloadFile = (fileUrl, localPath) => {
     });
   });
 };
+const s3 = new AWS.S3({
+  accessKeyId: '8CGOU6F802L2IM18EC7H',
+  secretAccessKey: 'mchYCUpJhjseCznkSI7S44a1RcnPeMfuNXSCZTgR',
+  endpoint: 's3.wasabisys.com',
+  s3ForcePathStyle: true,
+  signatureVersion: 'v4',
+});
+
 let sharedData=[];
 // Endpoint for uploading Chifa image and name
+
 app.post('/chifa', upload.single('image'), async (req, res, next) => {
   const fileUrl = req.body.imageChifa;
   const fileextension = fileUrl.split('/').pop();
   const filePart = fileextension.split('?')[0].split('.');
   const extension = filePart[filePart.length - 1];
-  let localPath = `/workspace/test-jisr/src/public/Images/${req.body.fileName}/Chifa@${req.body.fileName}.${extension}`;
-  let counter = 0;
-  while (fs.existsSync(localPath)) {
-    counter += 1;
-    localPath = path.join(
-      __dirname,
-      `/workspace/test-jisr/src/public/Images/${req.body.fileName}/Chifa@${req.body.fileName}${counter}.${extension}`
-    );
-  }
-  console.log(req.body.imageChifa, localPath); // log the uploaded file object
 
   const lastName = req.body.lastName;
-  const imageName = `Chifa@${req.body.fileName}${counter}.${extension}`;
-  const imagePath = path.join(__dirname, `/workspace/test-jisr/src/public/Images/${req.body.fileName}`, imageName);
-  console.log(imagePath);
+  const imageName = `Chifa@${req.body.fileName}.${extension}`;
 
-  let imageNameChifa=imageName
-  sharedData.imageNameChifa = imageNameChifa;
-  
-  // Wait for the file to download and get the buffer
-  const buffer = await downloadFile(req.body.imageChifa, localPath);
-
-  // Add chifaImage data to tempUser
-  tempUser.chifaImage = {
-    firstName: req.body.fileName,
-    lastName: lastName,
-    name: imageName,
-    data: buffer,
-    contentType: `image/${extension}`,
+  // Upload the file to Wasabi
+  const params = {
+    Bucket: 'imagesjisr',
+    Key: imageName,
+    Body: req.file.buffer,
+    ContentType: `image/${extension}`
   };
-  console.log('Chifa image uploaded successfully to the path : ', imagePath, tempUser.chifaImage);
+  s3.upload(params, (err, data) => {
+    if (err) {
+      console.error(err);
+      return res.status(500).send('Error uploading image to Wasabi');
+    }
+    console.log('Image uploaded to Wasabi:', data.Location);
 
-  next();
+    // Add chifaImage data to tempUser
+    tempUser.chifaImage = {
+      firstName: req.body.fileName,
+      lastName: lastName,
+      name: imageName,
+      url: data.Location,
+      contentType: `image/${extension}`
+    };
+    console.log('Chifa image uploaded successfully', tempUser.chifaImage);
+    next();
+  });
 });
+
+
+
+// app.post('/chifa', upload.single('image'), async (req, res, next) => {
+//   const fileUrl = req.body.imageChifa;
+//   const fileextension = fileUrl.split('/').pop();
+//   const filePart = fileextension.split('?')[0].split('.');
+//   const extension = filePart[filePart.length - 1];
+//   let localPath = `/workspace/test-jisr/src/public/Images/${req.body.fileName}/Chifa@${req.body.fileName}.${extension}`;
+//   let counter = 0;
+//   while (fs.existsSync(localPath)) {
+//     counter += 1;
+//     localPath = path.join(
+//       __dirname,
+//       `/workspace/test-jisr/src/public/Images/${req.body.fileName}/Chifa@${req.body.fileName}${counter}.${extension}`
+//     );
+//   }
+//   console.log(req.body.imageChifa, localPath); // log the uploaded file object
+
+//   const lastName = req.body.lastName;
+//   const imageName = `Chifa@${req.body.fileName}${counter}.${extension}`;
+//   const imagePath = path.join(__dirname, `/workspace/test-jisr/src/public/Images/${req.body.fileName}`, imageName);
+//   console.log(imagePath);
+
+//   let imageNameChifa=imageName
+//   sharedData.imageNameChifa = imageNameChifa;
+  
+//   // Wait for the file to download and get the buffer
+//   const buffer = await downloadFile(req.body.imageChifa, localPath);
+
+//   // Add chifaImage data to tempUser
+//   tempUser.chifaImage = {
+//     firstName: req.body.fileName,
+//     lastName: lastName,
+//     name: imageName,
+//     data: buffer,
+//     contentType: `image/${extension}`,
+//   };
+//   console.log('Chifa image uploaded successfully to the path : ', imagePath, tempUser.chifaImage);
+
+//   next();
+// });
 // Endpoint for uploading Ordonnance image and name
 app.post('/ordonnance', upload.single('image'), async (req, res) => {
 
