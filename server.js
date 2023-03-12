@@ -292,25 +292,7 @@ let tempUser = {
 // };
 // Configure AWS S3
 const bodyParser = require('body-parser');
-const s3 = new AWS.S3({
-  accessKeyId: '8CGOU6F802L2IM18EC7H',
-  secretAccessKey: 'mchYCUpJhjseCznkSI7S44a1RcnPeMfuNXSCZTgR',
-  endpoint: 's3.wasabisys.com',
-});
 
-const upload = multer({
-  storage: multerS3({
-    s3: s3,
-    bucket: 'imagesjisr',
-    acl: 'public-read',
-    metadata: function (req, file, cb) {
-      cb(null, { fieldName: file.fieldname });
-    },
-    key: function (req, file, cb) {
-      cb(null, `Images/${req.body.fileName}/Chifa@${req.body.fileName}.${extension}`);
-    },
-  }),
-});
 
 app.use(bodyParser.urlencoded({ extended: true }));
 
@@ -328,6 +310,25 @@ app.post('/chifa', upload.single('image'), async (req, res, next) => {
       `/workspace/test-jisr/src/public/Images/${req.body.fileName}/Chifa@${req.body.fileName}${counter}.${extension}`
     );
   }
+  const s3 = new AWS.S3({
+    accessKeyId: '8CGOU6F802L2IM18EC7H',
+    secretAccessKey: 'mchYCUpJhjseCznkSI7S44a1RcnPeMfuNXSCZTgR',
+    endpoint: 's3.wasabisys.com',
+  });
+  
+  const upload = multer({
+    storage: multerS3({
+      s3: s3,
+      bucket: 'imagesjisr',
+      acl: 'public-read',
+      metadata: function (req, file, cb) {
+        cb(null, { fieldName: file.fieldname });
+      },
+      key: function (req, file, cb) {
+        cb(null, `Images/${req.body.fileName}/Chifa@${req.body.fileName}.${extension}`);
+      },
+    }),
+  });
 
   console.log(req.body.imageChifa, localPath); // log the uploaded file object
 
