@@ -291,6 +291,7 @@ let tempUser = {
 //   });
 // };
 // Configure AWS S3
+const bodyParser = require('body-parser');
 const s3 = new AWS.S3({
   accessKeyId: '8CGOU6F802L2IM18EC7H',
   secretAccessKey: 'mchYCUpJhjseCznkSI7S44a1RcnPeMfuNXSCZTgR',
