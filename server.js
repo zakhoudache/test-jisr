@@ -41,8 +41,8 @@ const base64Img = require('base64-img');
 
 // const AWS = require('aws-sdk');
 
-
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static('htmlFolder'));
+// app.use(express.static(path.join(__dirname, 'public')));
 // Set the "Content-Type" header to "text/css" for CSS files
 app.use('*.css', (req, res, next) => {
   res.setHeader('Content-Type', 'text/css');
@@ -50,7 +50,7 @@ app.use('*.css', (req, res, next) => {
 });
 app.set('view engine', 'ejs');
 // app.set('view engine', 'ejs');
-// app.use(express.static('public'));
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
