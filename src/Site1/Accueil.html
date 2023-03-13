@@ -161,7 +161,7 @@
           // const linkUrlA = user.adresse.adresseText;
           // console.log(linkUrlA);
 
-          document.getElementById("myLink").href = `http://localhost:8005/livreurs.html?createPlaceholder=true&linkUrlA=${encodeURIComponent(linkUrlA)}`;
+          document.getElementById("myLink").href = `https://test-jisr-production.up.railway.app/livreurs.html?createPlaceholder=true&linkUrlA=${encodeURIComponent(linkUrlA)}`;
 
           // submit the form data to the server
           fetch('/save-state', {
@@ -173,7 +173,7 @@
           })
             .then(function(response) {
               if (response.ok) {
-                window.location.href = `http://localhost:8005/livreurs.html?createPlaceholder=true&linkUrlA=${linkUrlA}`; // Corrected URL with parameter name
+                window.location.href = `https://test-jisr-production.up.railway.app/livreurs.html?createPlaceholder=true&linkUrlA=${linkUrlA}`; // Corrected URL with parameter name
               } else {
                 console.log('Form submission failed.');
               }
