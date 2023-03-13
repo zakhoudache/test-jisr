@@ -54,6 +54,10 @@ app.set('view engine', 'ejs');
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+app.get('/page1.css', (req, res) => {
+  res.setHeader('Content-Type', 'text/css');
+  res.sendFile(__dirname + '/public/page1.css');
+});
 
 const csp = require('content-security-policy');
 
