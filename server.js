@@ -43,6 +43,11 @@ const base64Img = require('base64-img');
 
 
 app.use(express.static(path.join(__dirname, 'public')));
+// Set the "Content-Type" header to "text/css" for CSS files
+app.use('*.css', (req, res, next) => {
+  res.setHeader('Content-Type', 'text/css');
+  next();
+});
 app.set('view engine', 'ejs');
 // app.set('view engine', 'ejs');
 // app.use(express.static('public'));
