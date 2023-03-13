@@ -9,6 +9,7 @@ const { spawn } = require('child_process');
 const util = require('util');
 const stream = require('stream');
 const pipeline = util.promisify(stream.pipeline);
+const multerS3 = require('multer-s3');
 
 // const {client} = new Client();
 const port = process.env.PORT || 8005;
@@ -25,8 +26,9 @@ const ejs = require('ejs');
 // const User = require('./models/user');
 
 // const mongoose = require('mongoose');
-const multer = require('multer');
-const upload = multer({ dest: 'src/public/Images' });
+// const multer = require('multer');
+
+
 // var upload = multer({limits: {fileSize: 1064960 },dest:'/uploads/'}).single('picture');
 
 
@@ -37,7 +39,7 @@ const upload = multer({ dest: 'src/public/Images' });
 
 const base64Img = require('base64-img');
 
-
+// const AWS = require('aws-sdk');
 
 
 app.use(express.static(path.join(__dirname, '')));
@@ -74,28 +76,6 @@ app.use(function(req, res, next) {
 
 app.set('trust proxy', 1);
 
-// app.use(session({
-// cookie:{
-//     secure: true,
-//     maxAge:60000
-//        },
-// store: new RedisStore(),
-// secret: 'secret',
-// saveUninitialized: true,
-// resave: false
-// }));
-
-// app.use(function(req,res,next){
-// if(!req.session){
-//     return next(new Error('Oh no')) //handle error
-// }
-// next() //otherwise continue
-// });
-
-// const crypto = require('crypto');
-
-// // Generate a random 16-byte nonce value
-// const nonce = crypto.randomBytes(16).toString('base64');
 
 // Set the Content Security Policy header
 app.use((req, res, next) => {
@@ -110,23 +90,7 @@ app.get('/', (req, res) => {
 
   const filePath = path.join(__dirname, 'htmlFolder', 'page1.html');
   res.sendFile(filePath)
-  // const html = `
-  //   <!DOCTYPE html>
-  //   <html>
-  //     <head>
-  //       <meta charset="utf-8">
-  //       <title>Example Page</title>
-  //       #inline-style {
-  //         background: red;
-  //       }
-        
-  //     </head>
-  //     <body>
-  //       <h1>Hello, world!</h1>
-  //     </body>
-  //   </html>
-  // `;
-  // res.send(html);
+  
 });
 
 
@@ -148,142 +112,6 @@ app.get('/pharma', function(req, res) {
 });
 
 
-function loadTextFile(callback) {
-  // Make the first GET request
-  fs.readFile('ListFilename.txt', 'utf8', (err, data1) => {
-    if (err) {
-      console.error(`Error reading ListFilename.txt: ${err}`);
-      return callback(err);
-    }
-
-    fs.readFile('ListFilenameOrdonnance.txt', 'utf8', (err, data2) => {
-      if (err) {
-        console.error(`Error reading ListFilenameOrdonnance.txt: ${err}`);
-        return callback(err);
-      }
-
-      let $table = $("<table></table>");
-      let lastLineC = data1.trim().split("\n");
-      let lastLineO = data2.trim().split("\n");
-
-      for (let i = 0; i < lastLineC.length; i++) {
-        const filenameC = lastLineC[i].trim();
-        const filenameO = lastLineO[i].trim();
-
-        let $tableRow = $("<tr></tr>");
-        let $textCell = $("<td></td>").text(filenameC + filenameO);
-        let linkUrlC = `/src/Site1/Accueil.html?linkUrlC=${filenameC}`;
-        let $linkCellChifa = $("<td></td>").html(`<a href="${linkUrlC}">Go to Page Accueil-C.html</a>`);
-        let linkUrlO = `/src/Site1/Accueil.html?linkUrlO=${filenameO}`;
-        let $linkCellOrdonnance = $("<td></td>").html(`<a href="${linkUrlO}">Go to Page Accueil-O.html</a>`);
-        let linkUrl_C_O = `/src/Site1/Accueil.html?linkUrlC=${filenameC}&linkUrlO=${filenameO}`;
-        let $linkCellChifa_Ord = $("<td></td>").html(`<a href="${linkUrl_C_O}">Go to Page Accueil-C-O.html</a>`);
-
-        $tableRow.append($textCell, $linkCellChifa, $linkCellOrdonnance, $linkCellChifa_Ord);
-        $table.append($tableRow);
-
-        // Store the updated list of added filenames and image order in local storage
-        let imageOrder = [];
-        for (let i = 0; i < filenameC.length; i++) {
-          imageOrder.push(filenameC[i]);
-          imageOrder.push(filenameO[i]);
-        }
-      }
-        
-        $table.append("<thead><tr><th>Image Paths</th><th>Go Chifa</th><th>Go Ordonnance</th><th>Go Chifa-Ordonnance</th></tr></thead>");
-        $table.append("<tbody></tbody>");
-      
-        html = `<html>
-        <head>
-        <style>
-        #table-container {
-          width: 100%;
-          margin: 0 auto;
-          padding: 20px;
-          font-family: sans-serif;
-        }
-        
-        table {
-          border-collapse: collapse;
-          width: 100%;
-        }
-        
-        thead tr {
-          background-color: #1abc9c;
-          color: #fff;
-          text-align: left;
-        }
-        
-        th,
-        td {
-          padding: 12px 15px;
-          text-align: left;
-          border-bottom: 1px solid #ddd;
-        }
-        
-        tbody tr:nth-child(even) {
-          background-color: #f2f2f2;
-        }
-        
-        a {
-          text-decoration: none;
-          color: #1abc9c;
-        }
-        
-        a:hover {
-          text-decoration: underline;
-        }
-        
-        </style>
-      
-          <title>List of filenames</title>
-        </head>
-        <body>
-          ${$table.prop('outerHTML')}
-        </body>
-      </html>`;
-       
-        callback(null, html);
-
-    
-    // processData(data1, data2);
-  });
-});
-
-}
-
-function createTableRow(filenameC,filenameO) {
-  // Implementation of createtablerow function goes here
-  
-    // Create the table row
-    let $row = $("<tr></tr>");
-  
-    let $filenameCCell_OCell = $("<td></td>").text(filenameC+filenameO);
-    $row.append($filenameCCell_OCell);
-   
-  
-    // Add the links to the table
-    let linkUrlC = `/src/Site1/Accueil.html?linkUrlC=\\${filenameC}`;
-    let $linkC_Chifa = $("<td></td>").html(`<a href="${linkUrlC}">Go to Page Accueil-C.html</a>`);
-    $row.append($linkC_Chifa);
-  
-    let linkUrlO = `/src/Site1/Accueil.html?linkUrlO=\\${filenameO}`;
-    let $linkC_Ordonnance = $("<td></td>").html(`<a href="${linkUrlO}">Go to Page Accueil-O.html</a>`);
-    $row.append($linkC_Ordonnance);
-    // let linkUrl_C_O = `\\src\\Site1\\Accueil.html?linkUrlC=${imageOrder[i]}&linkUrlO=${imageOrder[i+1]}`;
-  
-    let linkUrl_C_O = `src/Site1/Accueil.html?linkUrlC=\\${filenameC}&linkUrlO=\\${filenameO}`;
-    let $linkC_Chifa_Ord = $("<td></td>").html(`<a href="${linkUrl_C_O}">Go to Page Accueil-C-O.html</a>`);
-    $row.append($linkC_Chifa_Ord);
-    // Add the row to the table
-    // $table.prepend($row);
-      // }
-  
-    return $row;
-  
-
-  
-}
 app.get('/src/public/Images/:filename/:filename', (req, res) => {
   const filename = req.params.filename;
   const imagePath = path.join(__dirname, 'src/public/Images/',filename, filename);
@@ -427,32 +255,22 @@ let tempUser = {
   chifa_ordonnanceImages:null,
   adresse: null
 };
-// Configure multer storage engine
+
 // const storage = multer.diskStorage({
 //   destination: function (req, file, cb) {
-//     cb(null, 'public/Images/'); // set the destination folder for the uploaded file
+//     const dir = 'src/public/Images/';
+//     if (!fs.existsSync(dir)) {
+//       fs.mkdirSync(dir, { recursive: true }); // create the directory if it doesn't exist
+//     }
+//     cb(null, dir);
 //   },
 //   filename: function (req, file, cb) {
-//     // const extension = path.extname(file.originalname); // get the file extension
-//     cb(null, file.fieldname + '-' + Date.now()); // set the filename
+//     // const extension = path.extname(file.originalname); // extract the file extension
+//     cb(null, file.fieldname + '-' + Date.now() + extension);
 //   }
 // });
 
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    const dir = 'src\\public\\Images\\';
-    if (!fs.existsSync(dir)) {
-      fs.mkdirSync(dir, { recursive: true }); // create the directory if it doesn't exist
-    }
-    cb(null, dir);
-  },
-  filename: function (req, file, cb) {
-    // const extension = path.extname(file.originalname); // extract the file extension
-    cb(null, file.fieldname + '-' + Date.now() + extension);
-  }
-});
-
-// Create multer instance with storage engine
+// // Create multer instance with storage engine
 const downloadFile = (fileUrl, localPath) => {
   return new Promise((resolve, reject) => {
     const file = fs.createWriteStream(localPath);
@@ -461,7 +279,7 @@ const downloadFile = (fileUrl, localPath) => {
       response.pipe(file);
       file.on('finish', () => {
         file.close(() => {
-          console.log('File downloaded successfully.');
+          console.log('File downloaded successfully from the path :', localPath);
           const fileData = fs.readFileSync(localPath);
           resolve(fileData);
         });
@@ -473,99 +291,393 @@ const downloadFile = (fileUrl, localPath) => {
     });
   });
 };
-let sharedData=[];
-// Endpoint for uploading Chifa image and name
-app.post('/chifa', upload.single('image'), async (req, res, next) => {
-  const fileUrl = req.body.imageChifa;
-  const fileextension = fileUrl.split('\\').pop();
-  const filePart = fileextension.split('?')[0].split('.');
-  const extension = filePart[filePart.length - 1];
-  let localPath = `src\\public\\Images\\${req.body.fileName}\\Chifa@${req.body.fileName}.${extension}`;
-  let counter = 0;
-  while (fs.existsSync(localPath)) {
-    counter += 1;
-    localPath = path.join(
-      __dirname,
-      `src\\public\\Images\\${req.body.fileName}\\Chifa@${req.body.fileName}${counter}.${extension}`
-    );
+// Configure AWS S3
+// const bodyParser = require('body-parser');
+// // const Busboy = require('busboy');
+// const BUCKET_NAME = '';
+// const IAM_USER_KEY = '8CGOU6F802L2IM18EC7H';
+// const IAM_USER_SECRET = 'mchYCUpJhjseCznkSI7S44a1RcnPeMfuNXSCZTgR';
+
+// function uploadToS3(file) {
+//   let s3bucket = new AWS.S3({
+//     accessKeyId: IAM_USER_KEY,
+//     secretAccessKey: IAM_USER_SECRET,
+//     Bucket: BUCKET_NAME
+//   });
+//   s3bucket.createBucket(function () {
+//       var params = {
+//         Bucket: BUCKET_NAME,
+//         Key: file.name,
+//         Body: file.data,
+//         ACL:'public-read'
+//       };
+//       s3bucket.upload(params, function (err, data) {
+//         if (err) {
+//           console.log('error in callback');
+//           console.log(err);
+//         }
+//         console.log('success');
+//         console.log(data);
+//       });
+//   });
+// }
+const { v4: uuidv4 } = require('uuid');
+
+
+// const upload = multer({ storage: multer.memoryStorage() });
+// const upload = multer();
+
+
+// MULTER
+const multer = require('multer')
+const storage = multer.diskStorage({
+  destination: function(req, file, cb) {
+    cb(null, 'uploads/')
+  },
+  filename: function(req, file, cb) {
+    console.log(file)
+    cb(null, file.originalname)
   }
-  console.log(req.body.imageChifa, localPath); // log the uploaded file object
+})
+
+
+
+
+// app.post('/upload', (req, res, next) => {
+//   const upload = multer({ storage }).single('name-of-input-key')
+//   upload(req, res, function(err) {
+//     if (err) {
+//       return res.send(err)
+//     }
+//     console.log('file uploaded to server')
+//     console.log(req.file)
+
+   
+// const cloudinary = require('cloudinary').v2;
+// // app.use(bodyParser.urlencoded({ extended: true }));
+// cloudinary.config({
+//   cloud_name: 'dxmyhaefh',
+//   api_key: '789113989744146',
+//   api_secret: 'soMjD3ePkHCpCC8hR4xd5jzEJnk',
+// });
+//     const path = req.file.path
+//     const uniqueFilename = new Date().toISOString()
+
+//     cloudinary.uploader.upload(
+//       path,
+//       { public_id: `blog/${uniqueFilename}`, tags: `blog` }, // directory and tags are optional
+//       function(err, image) {
+//         if (err) return res.send(err)
+//         console.log('file uploaded to Cloudinary')
+//         // remove file from server
+//         const fs = require('fs')
+//         fs.unlinkSync(path)
+//         // return image details
+//         res.json(image)
+//       }
+//     )
+//   })
+// })
+const cloud_name= 'dxmyhaefh';
+const api_key= '789113989744146';
+const api_secret= 'soMjD3ePkHCpCC8hR4xd5jzEJnk';
+const FormData = require('form-data');
+
+
+let sharedData ={};
+// let cloudinaryImageUrl='';
+app.post('/chifa', async (req, res, next) => {
+  // cloudinaryUploadUrl="https://api.cloudinary.com/v1_1/dxmyhaefh/auto/upload?file={{imageChifa}}&public_id={{fileName}}&upload_preset=yzepqoe1"
+  const fileUrl = req.body.imageChifa;
+  const fileExtension = fileUrl.split('/').pop().split('?')[0].split('.').pop();
+  const fileName_ = req.body.fileName;
+  let counter = 0;
+  let localPath = `public/Chifa@${fileName_}${counter}.${fileExtension}`;
+
+
+while (fs.existsSync(localPath)) {
+    counter += 1;
+    localPath = `public/Chifa@${fileName_}${counter}.${fileExtension}`;
+}
 
   const lastName = req.body.lastName;
-  const imageName = `Chifa@${req.body.fileName}${counter}.${extension}`;
-  const imagePath = path.join(__dirname, `src\\public\\Images\\${req.body.fileName}`, imageName);
-  console.log(imagePath);
+  const imageName = `Chifa@${req.body.fileName}${counter}.${fileExtension}`;
 
-let imageNameChifa=imageName
-  sharedData.imageNameChifa = imageNameChifa;
   
-  // Wait for the file to download and get the buffer
-  const buffer = await downloadFile(req.body.imageChifa, localPath);
+  let imageNameChifa = imageName;
+  sharedData.imageNameChifa = imageNameChifa;
+fs.writeFile(localPath, fileUrl, 'base64', async (err) => {
+  if (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Failed to save file' });
+    return;
+  }
 
-  // Add chifaImage data to tempUser
-  tempUser.chifaImage = {
-    firstName: req.body.fileName,
-    lastName: lastName,
-    name: imageName,
-    data: buffer,
-    contentType: `image/${extension}`,
-  };
-  console.log('Chifa image uploaded successfully', tempUser.chifaImage);
+  try {
+    // Download file from URL
+    const response = await axios.get(fileUrl, { responseType: 'stream' });
+    const writer = fs.createWriteStream(localPath);
+    response.data.pipe(writer);
 
-  next();
-});
+    await new Promise((resolve, reject) => {
+      writer.on('finish', resolve);
+      writer.on('error', reject);
+    });
+
+    const cloudinaryUrl = `https://api.cloudinary.com/v1_1/${cloud_name}/auto/upload`;
+    const formData = new FormData();
+    formData.append('file', fs.createReadStream(localPath));
+    formData.append('upload_preset', 'yzepqoe1');
+    formData.append('folder',`Cloudinary/${fileName_}`)
+    
+    // Return Cloudinary URL to client
+
+   const options = {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+        'X-Requested-With': 'XMLHttpRequest',
+      },
+      auth: {
+        username: api_key,
+        password: api_secret,
+      },
+    };
+    const cloudinaryResponse = await axios.post(cloudinaryUrl, formData, options);
+   const cloudinaryImageUrlC = cloudinaryResponse.data.secure_url;
+
+
+  
+   sharedData.cloudinaryImageUrlC = cloudinaryImageUrlC;
+
+  // sharedData.append(imageNameChifa);
+  console.log(sharedData)
+//   let imageNameChifa=imageName
+//   sharedData.imageNameChifa = imageNameChifa;
+  // sharedData.imageNameChifa = imageNameChifa;
+   // Wait for the file to download and get the buffer
+   const buffer = await downloadFile(req.body.imageChifa, localPath);
+ 
+   // Add chifaImage data to tempUser
+   tempUser.chifaImage = {
+   
+ 
+     firstName: req.body.fileName,
+     lastName: lastName,
+     name: imageName,
+     data: buffer,
+     contentType: `image/${fileExtension}`,
+   };
+   fs.unlink(localPath, async (err) => {
+    if (err) {
+      console.error(err);
+      // res.status(500).json({ message: 'Failed to unlink file' });
+      return;
+    }else {
+      console.log("file unlinked ")
+    }
+  });
+
+   ;
+   console.log('Chifa image uploaded successfully to the path : ', localPath, tempUser.chifaImage);
+ 
+   next();
+   
+    // res.status(200).send(`File uploaded to Cloudinary: ${cloudinaryImageUrl}`);
+
+  } catch (error) {
+    console.error(error);
+    // res.status(500).json({ message: 'Failed to upload file to Cloudinary' });
+  }finally {
+    // Delete local file
+    fs.unlink(localPath, (err) => {
+      if (err) {
+        console.error(`Failed to delete file ${localPath}:`, err);
+      } else {
+        console.log(`File ${localPath} deleted`);
+      }
+    })
+  }
+  console.log(sharedData);
+    // Add chifaImage data to tempUser
+    // tempUser.chifaImage = {
+    //   firstName: fileName_,
+    //   name: imageName,
+    //   data: Buffer.from(req.body.imageChifa, 'base64'),
+    //   contentType: `image/${fileExtension}`,
+    // };
+
+// res.redirect('/ordonnance
+});});
+
+// Check if an image with a given name exists in a Cloudinary folder
+// async function checkImageExistsInFolder(folderName, imageName) {
+//   try {
+//     const searchResult = await cloudinary.search
+//       .expression(`folder:${folderName} AND filename:${imageName}`)
+//       .execute();
+//     return searchResult.total_count > 0;
+//   } catch (error) {
+//     console.error(error);
+//     return false;
+//   }
+// }
+
+
+// app.post('/chifa', upload.single('image'), async (req, res, next) => {
+//   const fileUrl = req.body.imageChifa;
+//   const fileextension = fileUrl.split('/').pop();
+//   const filePart = fileextension.split('?')[0].split('.');
+//   const extension = filePart[filePart.length - 1];
+//   let localPath = `/workspace/test-jisr/src/public/Images/${req.body.fileName}/Chifa@${req.body.fileName}.${extension}`;
+//   let counter = 0;
+//   while (fs.existsSync(localPath)) {
+//     counter += 1;
+//     localPath = path.join(
+//       __dirname,
+//       `/workspace/test-jisr/src/public/Images/${req.body.fileName}/Chifa@${req.body.fileName}${counter}.${extension}`
+//     );
+//   }
+//   console.log(req.body.imageChifa, localPath); // log the uploaded file object
+
+//   const lastName = req.body.lastName;
+//   const imageName = `Chifa@${req.body.fileName}${counter}.${extension}`;
+//   const imagePath = path.join(__dirname, `/workspace/test-jisr/src/public/Images/${req.body.fileName}`, imageName);
+//   console.log(imagePath);
+
+//   let imageNameChifa=imageName
+//   sharedData.imageNameChifa = imageNameChifa;
+  
+//   // Wait for the file to download and get the buffer
+//   const buffer = await downloadFile(req.body.imageChifa, localPath);
+
+//   // Add chifaImage data to tempUser
+//   tempUser.chifaImage = {
+//     firstName: req.body.fileName,
+//     lastName: lastName,
+//     name: imageName,
+//     data: buffer,
+//     contentType: `image/${extension}`,
+//   };
+//   console.log('Chifa image uploaded successfully to the path : ', imagePath, tempUser.chifaImage);
+
+//   next();
+// });
+const upload_ = multer({ dest: 'src/public/Images' });
 // Endpoint for uploading Ordonnance image and name
-app.post('/ordonnance', upload.single('image'), async (req, res) => {
+app.post('/ordonnance', upload_.single('image'), async (req, res) => {
 
      
   const fileUrl=req.body.imageOrdonnance;
-  const fileextension =fileUrl.split('\\').pop();
+  const fileextension =fileUrl.split('/').pop();
   const filePart = fileextension.split('?')[0].split('.');
   const extension = filePart[filePart.length - 1];
-  let localPathO=`src\\public\\Images\\${req.body.fileName}\\Ordonnance@${req.body.fileName}.${extension}`;
+  let counter = 0;
+  let localPathO=`public/Ordonnance@${req.body.fileName}${counter}.${extension}`;
   
-  
-let counter = 0;
+  const fileName= req.body.fileName
+
 while (fs.existsSync(localPathO)) {
   counter += 1;
-  localPathO = path.join(__dirname, `src\\public\\Images\\${req.body.fileName}\\Ordonnance@${req.body.fileName}${counter}.${extension}`);
+  localPathO = `public/Ordonnance@${req.body.fileName}${counter}.${extension}`;
 }
 console.log(req.body.imageOrdonnance, localPathO, counter); // log the uploaded file object
+const lastName = req.body.lastName;
+  const imageName = `Ordonnance@${req.body.fileName}${counter}.${extension}`;
+fs.writeFile(localPathO, fileUrl, 'base64', async (err) => {
+  if (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Failed to save file' });
+    return;
+  }
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  const response = await axios.get(fileUrl, { responseType: 'stream' });
+    const writer = fs.createWriteStream(localPathO);
+    response.data.pipe(writer);
+
+    await new Promise((resolve, reject) => {
+      writer.on('finish', resolve);
+      writer.on('error', reject);
+    });
+
+    const cloudinaryUrl = `https://api.cloudinary.com/v1_1/${cloud_name}/auto/upload`;
+    const formData = new FormData();
+    formData.append('file', fs.createReadStream(localPathO));
+    formData.append('upload_preset', 'yzepqoe1');
+    formData.append('folder',`Cloudinary/${fileName}`)
+    
+
+    // Return Cloudinary URL to client
+
+   const options = {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+      'X-Requested-With': 'XMLHttpRequest',
+    },
+    auth: {
+      username: api_key,
+      password: api_secret,
+    },
+  };
+  const cloudinaryResponse = await axios.post(cloudinaryUrl, formData, options);
+ const cloudinaryImageUrlO = cloudinaryResponse.data.secure_url;
+
+//  let imageNameChifa=imageName
+//  sharedData.imageNameChifa = imageNameChifa;
+ 
+
 
 // buffer=downloadFile(req.body.imageOrdonnance,localPath)
-downloadFile(req.body.imageOrdonnance, localPathO).then(buffer => {
+let buffer =await downloadFile(req.body.imageOrdonnance, localPathO)
   tempUser.ordonnanceImage = {
+ 
     firstName: req.body.fileName,
     lastName: lastName,
     name: imageName,
     data: buffer,
     contentType: `image/${extension}`
   }; 
+  
   console.log('Ordonnance image uploaded successfully', tempUser.ordonnanceImage);
-
-}).catch(error => {
-  console.error(`Error downloading file: ${error.message}`);
-});
-
-const lastName= req.body.lastName;
-const imageName = `Ordonnance@${req.body.fileName}${counter}.${extension}`;
-const imagePathO = path.join(__dirname, `src\\public\\Images\\${req.body.fileName}\\Ordonnance@${req.body.fileName}${counter}.${extension}`);
-console.log(imagePathO);
-
-
-const chifa_ordonnanceImages =[sharedData.imageNameChifa, imageName];
-
+  
+const chifa_ordonnanceImages =[sharedData.imageNameChifa, imageName,sharedData.cloudinaryImageUrlC,cloudinaryImageUrlO];
+console.log(sharedData);
 tempUser.chifa_ordonnanceImages = {
 
-   coText : chifa_ordonnanceImages
+ coText : chifa_ordonnanceImages
 
 }
 console.log('Chifa and Ordonnance Both images sent together!',tempUser.chifa_ordonnanceImages);
-res.send('Ordonnance image uploaded successfully and Chifa and Ordonnance Both images sent together!'); // rest of your code goes here
-});
 
 
+  fs.unlink(localPathO, async (err) => {
+    if (err) {
+      console.error(err);
+      // res.status(500).json({ message: 'Failed to unlink file' });
+      return;
+    }else {
+      console.log("file unlinked ")
+    }});
 
+
+});});
+
+// /workspace/test-jisr/src/public/Images/Abdesslam
 let globalAdr;
 
 
