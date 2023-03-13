@@ -97,7 +97,7 @@ app.use((req, res, next) => {
 app.get('/', (req, res) => {
   res.setHeader('Content-Security-Policy', "style-src 'self' 'unsafe-inline'");
 
-  const filePath = path.join(__dirname, 'htmlFolder', 'page1.html');
+  const filePath = path.join(__dirname, 'public', 'page1.html');
   res.sendFile(filePath)
   
 });
@@ -116,7 +116,7 @@ const $ = require('jquery');
 
 
 app.get('/pharma', function(req, res) {
-  const filePath = path.join(__dirname, 'htmlFolder', 'page1.html');
+  const filePath = path.join(__dirname, 'public', 'page1.html');
   res.sendFile(filePath)
 });
 
