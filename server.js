@@ -42,7 +42,7 @@ const base64Img = require('base64-img');
 // const AWS = require('aws-sdk');
 
 
-app.use(express.static(path.join(__dirname, '')));
+app.use(express.static(path.join(__dirname, 'public')));
 app.set('view engine', 'ejs');
 // app.set('view engine', 'ejs');
 // app.use(express.static('public'));
