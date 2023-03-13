@@ -59,19 +59,6 @@ app.get('/page1.css', (req, res) => {
   res.sendFile(__dirname + '/src/Site1/page1.css');
 });
 
-// app.get('/livreurs.css', (req, res) => {
-//   res.setHeader('Content-Type', 'text/css');
-//   res.sendFile(__dirname + '/livreurs.css');
-// });
-
-// app.get('/livreurs.html', (req, res) => {
-//   // res.setHeader('Content-Type', 'text/css');
-//   res.sendFile(__dirname + '/livreurs.html');
-// });
-// app.get('/src/Site1/Accueil.html', (req, res) => {
-//   // res.setHeader('Content-Type', 'text/css');
-//   res.sendFile(__dirname + '/src/Site1/Accueil.html');
-// });
 
 const csp = require('content-security-policy');
 
