@@ -41,7 +41,7 @@ const base64Img = require('base64-img');
 
 // const AWS = require('aws-sdk');
 
-app.use(express.static('public'));
+app.use(express.static('src/Site1'));
 // app.use(express.static(path.join(__dirname, 'public')));
 // Set the "Content-Type" header to "text/css" for CSS files
 app.use('*.css', (req, res, next) => {
@@ -56,8 +56,22 @@ app.use(express.urlencoded({ extended: true }));
 
 app.get('/page1.css', (req, res) => {
   res.setHeader('Content-Type', 'text/css');
-  res.sendFile(__dirname + '/public/page1.css');
+  res.sendFile(__dirname + '/src/Site1/page1.css');
 });
+
+// app.get('/livreurs.css', (req, res) => {
+//   res.setHeader('Content-Type', 'text/css');
+//   res.sendFile(__dirname + '/livreurs.css');
+// });
+
+// app.get('/livreurs.html', (req, res) => {
+//   // res.setHeader('Content-Type', 'text/css');
+//   res.sendFile(__dirname + '/livreurs.html');
+// });
+// app.get('/src/Site1/Accueil.html', (req, res) => {
+//   // res.setHeader('Content-Type', 'text/css');
+//   res.sendFile(__dirname + '/src/Site1/Accueil.html');
+// });
 
 const csp = require('content-security-policy');
 
@@ -78,7 +92,8 @@ app.use(globalCSP);
  
 app.use(function(req, res, next) {
   // res.header("Access-Control-Allow-Origin", `https://${process.env.PORT}-zakhoudache-jisrpharmac-q94cj5igwn9.ws-eu88.gitpod.io`);
-  res.header("Access-Control-Allow-Origin", "https://${process.env.PORT}-test-jisr-production.up.railway.app/");
+  // res.header("Access-Control-Allow-Origin", "https://${process.env.PORT}-test-jisr-production.up.railway.app/");
+  res.header("Access-Control-Allow-Origin", `https://${process.env.PORT}`);
   res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
   next();
 });
@@ -94,13 +109,13 @@ app.use((req, res, next) => {
 });
 
 // Render the HTML file with the nonce value in the style tag
-app.get('/', (req, res) => {
-  res.setHeader('Content-Security-Policy', "style-src 'self' 'unsafe-inline'");
+// app.get('/', (req, res) => {
+//   res.setHeader('Content-Security-Policy', "style-src 'self' 'unsafe-inline'");
 
-  const filePath = path.join(__dirname, 'public', 'page1.html');
-  res.sendFile(filePath)
+//   const filePath = path.join(__dirname, 'public', 'page1.html');
+//   res.sendFile(filePath)
   
-});
+// });
 
 
 
@@ -116,10 +131,15 @@ const $ = require('jquery');
 
 
 app.get('/pharma', function(req, res) {
-  const filePath = path.join(__dirname, 'public', 'page1.html');
+  const filePath = path.join(__dirname, 'src/Site1', 'page1.html');
   res.sendFile(filePath)
 });
 
+
+// app.get('/details', function(req, res) {
+//   const filePath = path.join(__dirname, '/src/Site1', 'Accueil.html');
+//   res.sendFile(filePath)
+// });
 
 app.get('/src/public/Images/:filename/:filename', (req, res) => {
   const filename = req.params.filename;

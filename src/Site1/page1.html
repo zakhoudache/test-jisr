@@ -96,7 +96,7 @@ fetch('/users')
           
 
 
-            linkUrlC = `/src/Site1/Accueil.html?linkUrlC=${user.chifa_ordonnanceImages.coText[2]}`;
+            linkUrlC = `Accueil.html?linkUrlC=${user.chifa_ordonnanceImages.coText[2]}`;
       
 
             $linkC_Chifa=$("<td></td>").html(`<a href="${linkUrlC}">Go to Page Accueil-C.html</a>`);
@@ -104,10 +104,10 @@ fetch('/users')
       }
 
       if (user.ordonnanceImage && user.ordonnanceImage.data) {
-      //       const data = new Uint8Array(user.ordonnanceImage.
+      //       const data = new Uint8Array(user.ordonnanceImage.src\Site1\Accueil.html
 
 
-        linkUrlO = `/src/Site1/Accueil.html?linkUrlO=${user.chifa_ordonnanceImages.coText[3]}`;
+        linkUrlO = `Accueil.html?linkUrlO=${user.chifa_ordonnanceImages.coText[3]}`;
         $linkO_Ordonnance=$("<td></td>").html(`<a href="${linkUrlO}">Go to Page Accueil-O.html</a>`);
 
 
@@ -121,7 +121,7 @@ fetch('/users')
 
       if( user.chifa_ordonnanceImages && user.chifa_ordonnanceImages.coText) {
 
-          linkUrl_C_O = `/src/Site1/Accueil.html?linkUrlC=${user.chifa_ordonnanceImages.coText[2]}&linkUrlO=${user.chifa_ordonnanceImages.coText[3]}&linkUrlA=${linkUrlA}`;
+          linkUrl_C_O = `Accueil.html?linkUrlC=${user.chifa_ordonnanceImages.coText[2]}&linkUrlO=${user.chifa_ordonnanceImages.coText[3]}&linkUrlA=${linkUrlA}`;
           $linkC_Chifa_Ord = $("<td></td>").html(`<a href="${linkUrl_C_O}">Go to Page Accueil-C-O.html</a>`);
 
       }
