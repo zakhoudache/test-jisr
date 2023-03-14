@@ -394,61 +394,39 @@ const storage = multer.diskStorage({
 //     )
 //   })
 // })
-const cloud_name= 'dxmyhaefh';
-const api_key= '789113989744146';
-const api_secret= 'soMjD3ePkHCpCC8hR4xd5jzEJnk';
+const cloud_name = 'dxmyhaefh';
+const api_key = '789113989744146';
+const api_secret = 'soMjD3ePkHCpCC8hR4xd5jzEJnk';
 const FormData = require('form-data');
+const sharedData = {};
 
-
-let sharedData ={};
-// let cloudinaryImageUrl='';
 app.post('/chifa', async (req, res, next) => {
-  // cloudinaryUploadUrl="https://api.cloudinary.com/v1_1/dxmyhaefh/auto/upload?file={{imageChifa}}&public_id={{fileName}}&upload_preset=yzepqoe1"
   const fileUrl = req.body.imageChifa;
   const fileExtension = fileUrl.split('/').pop().split('?')[0].split('.').pop();
-  const fileName_ = req.body.fileName;
+  const fileName = req.body.fileName;
   let counter = 0;
-  let localPath = `public/Chifa@${fileName_}${counter}.${fileExtension}`;
+  let localPath = `public/Chifa@${fileName}${counter}.${fileExtension}`;
 
-
-while (fs.existsSync(localPath)) {
+  while (fs.existsSync(localPath)) {
     counter += 1;
-    localPath = `public/Chifa@${fileName_}${counter}.${fileExtension}`;
-}
-
-  const lastName = req.body.lastName;
-  const imageName = `Chifa@${req.body.fileName}${counter}.${fileExtension}`;
-
-  
-  let imageNameChifa = imageName;
-  sharedData.imageNameChifa = imageNameChifa;
-fs.writeFile(localPath, fileUrl, 'base64', async (err) => {
-  if (err) {
-    console.error(err);
-    res.status(500).json({ message: 'Failed to save file' });
-    return;
+    localPath = `public/Chifa@${fileName}${counter}.${fileExtension}`;
   }
 
-  try {
-    // Download file from URL
-    const response = await axios.get(fileUrl, { responseType: 'stream' });
-    const writer = fs.createWriteStream(localPath);
-    response.data.pipe(writer);
+  const lastName = req.body.lastName;
+  const imageName = `Chifa@${fileName}${counter}.${fileExtension}`;
 
-    await new Promise((resolve, reject) => {
-      writer.on('finish', resolve);
-      writer.on('error', reject);
-    });
+  sharedData.imageNameChifa = imageName;
+
+  try {
+    const buffer = await downloadFile(fileUrl, localPath);
 
     const cloudinaryUrl = `https://api.cloudinary.com/v1_1/${cloud_name}/auto/upload`;
     const formData = new FormData();
     formData.append('file', fs.createReadStream(localPath));
     formData.append('upload_preset', 'yzepqoe1');
-    formData.append('folder',`Cloudinary/${fileName_}`)
-    
-    // Return Cloudinary URL to client
+    formData.append('folder', `Cloudinary/${fileName}`);
 
-   const options = {
+    const options = {
       headers: {
         'Content-Type': 'multipart/form-data',
         'X-Requested-With': 'XMLHttpRequest',
@@ -458,73 +436,33 @@ fs.writeFile(localPath, fileUrl, 'base64', async (err) => {
         password: api_secret,
       },
     };
+
     const cloudinaryResponse = await axios.post(cloudinaryUrl, formData, options);
-   const cloudinaryImageUrlC = cloudinaryResponse.data.secure_url;
+    const cloudinaryImageUrlC = cloudinaryResponse.data.secure_url;
+    sharedData.cloudinaryImageUrlC = cloudinaryImageUrlC;
 
+    tempUser.chifaImage = {
+      firstName: fileName,
+      lastName: lastName,
+      name: imageName,
+      data: buffer,
+      contentType: `image/${fileExtension}`,
+    };
 
-  
-   sharedData.cloudinaryImageUrlC = cloudinaryImageUrlC;
-
-  // sharedData.append(imageNameChifa);
-  console.log(sharedData)
-//   let imageNameChifa=imageName
-//   sharedData.imageNameChifa = imageNameChifa;
-  // sharedData.imageNameChifa = imageNameChifa;
-   // Wait for the file to download and get the buffer
-   const buffer = await downloadFile(req.body.imageChifa, localPath);
- 
-   // Add chifaImage data to tempUser
-   tempUser.chifaImage = {
-   
- 
-     firstName: req.body.fileName,
-     lastName: lastName,
-     name: imageName,
-     data: buffer,
-     contentType: `image/${fileExtension}`,
-   };
-   fs.unlink(localPath, async (err) => {
-    if (err) {
-      console.error(err);
-      // res.status(500).json({ message: 'Failed to unlink file' });
-      return;
-    }else {
-      console.log("file unlinked ")
-    }
-  });
-
-   ;
-   console.log('Chifa image uploaded successfully to the path : ', localPath, tempUser.chifaImage);
- 
-   next();
-   
-    // res.status(200).send(`File uploaded to Cloudinary: ${cloudinaryImageUrl}`);
-
+    console.log('Chifa image uploaded successfully to the path: ', localPath, tempUser.chifaImage);
+    next();
   } catch (error) {
     console.error(error);
-    // res.status(500).json({ message: 'Failed to upload file to Cloudinary' });
-  }finally {
-    // Delete local file
+    res.status(500).json({ message: 'Failed to upload file to Cloudinary' });
+  } finally {
     fs.unlink(localPath, (err) => {
       if (err) {
-        console.error(`Failed to delete file ${localPath}:`, err);
+        console.error(err);
       } else {
-        console.log(`File ${localPath} deleted`);
+        console.log('File unlinked');
       }
-    })
-  }
-  console.log(sharedData);
-    // Add chifaImage data to tempUser
-    // tempUser.chifaImage = {
-    //   firstName: fileName_,
-    //   name: imageName,
-    //   data: Buffer.from(req.body.imageChifa, 'base64'),
-    //   contentType: `image/${fileExtension}`,
-    // };
-
-// res.redirect('/ordonnance
-});});
-
+    });
+  }})
 // Check if an image with a given name exists in a Cloudinary folder
 // async function checkImageExistsInFolder(folderName, imageName) {
 //   try {
@@ -581,117 +519,79 @@ fs.writeFile(localPath, fileUrl, 'base64', async (err) => {
 const upload_ = multer({ dest: 'src/public/Images' });
 // Endpoint for uploading Ordonnance image and name
 app.post('/ordonnance', upload_.single('image'), async (req, res) => {
-
-     
-  const fileUrl=req.body.imageOrdonnance;
-  const fileextension =fileUrl.split('/').pop();
-  const filePart = fileextension.split('?')[0].split('.');
-  const extension = filePart[filePart.length - 1];
-  let counter = 0;
-  let localPathO=`public/Ordonnance@${req.body.fileName}${counter}.${extension}`;
-  
-  const fileName= req.body.fileName
-
-while (fs.existsSync(localPathO)) {
-  counter += 1;
-  localPathO = `public/Ordonnance@${req.body.fileName}${counter}.${extension}`;
-}
-console.log(req.body.imageOrdonnance, localPathO, counter); // log the uploaded file object
-const lastName = req.body.lastName;
-  const imageName = `Ordonnance@${req.body.fileName}${counter}.${extension}`;
-fs.writeFile(localPathO, fileUrl, 'base64', async (err) => {
-  if (err) {
-    console.error(err);
-    res.status(500).json({ message: 'Failed to save file' });
-    return;
-  }
-
-
-
-
-
-
-
-
-
-
-
-  
-
-
-
-
-
-  const response = await axios.get(fileUrl, { responseType: 'stream' });
-    const writer = fs.createWriteStream(localPathO);
+  try {
+    const fileUrl = req.body.imageOrdonnance;
+    const fileName = req.body.fileName;
+    const fileExtension = fileUrl.split('/').pop().split('?')[0].split('.').pop();
+    let counter = 0;
+    let localPath = `public/Ordonnance@${fileName}${counter}.${fileExtension}`;
+    const response = await axios.get(fileUrl, { responseType: 'stream' });
+    const writer = fs.createWriteStream(localPath);
     response.data.pipe(writer);
-
     await new Promise((resolve, reject) => {
       writer.on('finish', resolve);
       writer.on('error', reject);
     });
-
     const cloudinaryUrl = `https://api.cloudinary.com/v1_1/${cloud_name}/auto/upload`;
     const formData = new FormData();
-    formData.append('file', fs.createReadStream(localPathO));
+    formData.append('file', fs.createReadStream(localPath));
     formData.append('upload_preset', 'yzepqoe1');
-    formData.append('folder',`Cloudinary/${fileName}`)
+    formData.append('folder', `Cloudinary/${fileName}`);
+    const options = {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+        'X-Requested-With': 'XMLHttpRequest',
+      },
+      auth: {
+        username: api_key,
+        password: api_secret,
+      },
+    };
+
+    
+    // let localPath = `public/Ordonnance@${fileName}${counter}.${fileExtension}`;
+  
+    while (fs.existsSync(localPath)) {
+      counter += 1;
+      localPath = `public/ordonnance@${fileName}${counter}.${fileExtension}`;
+    }
+  
+    const cloudinaryResponse = await axios.post(cloudinaryUrl, formData, options);
+    const cloudinaryImageUrlO = cloudinaryResponse.data.secure_url;
+    const lastName = req.body.lastName;
+    const imageName =`Ordonnance@${fileName}${counter}.${fileExtension}`;
+    const buffer = await downloadFile(fileUrl, localPath);
+     tempUser.ordonnanceImage= {
+        firstName: fileName,
+        lastName: lastName,
+        data: buffer,
+        contentType: `image/${fileExtension}`
+      }
     
 
-    // Return Cloudinary URL to client
+    const chifa_ordonnanceImages =[sharedData.imageNameChifa, imageName,sharedData.cloudinaryImageUrlC,cloudinaryImageUrlO];
+    // const chifa_ordonnanceImages =[sharedData.imageNameChifa, imageName];
+console.log(tempUser);
 
-   const options = {
-    headers: {
-      'Content-Type': 'multipart/form-data',
-      'X-Requested-With': 'XMLHttpRequest',
-    },
-    auth: {
-      username: api_key,
-      password: api_secret,
-    },
-  };
-  const cloudinaryResponse = await axios.post(cloudinaryUrl, formData, options);
- const cloudinaryImageUrlO = cloudinaryResponse.data.secure_url;
+// sharedData.chifa_ordonnanceImages = { coText : chifa_ordonnanceImages};
+tempUser.chifa_ordonnanceImages={ coText : chifa_ordonnanceImages};
 
-//  let imageNameChifa=imageName
-//  sharedData.imageNameChifa = imageNameChifa;
- 
+    console.log('Ordonnance image uploaded successfully', tempUser.ordonnanceImage);
+    console.log('Chifa and Ordonnance Both images sent together!', tempUser.chifa_ordonnanceImages);
+    res.status(200).json({ message: 'File uploaded successfully' });
+    fs.unlink(localPath, (err) => {
+      if (err) {
+        console.error(err);
+      } else {
+        console.log('File unlinked');
+      }
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Failed to save file' });
+  }
+});
 
-
-// buffer=downloadFile(req.body.imageOrdonnance,localPath)
-let buffer =await downloadFile(req.body.imageOrdonnance, localPathO)
-  tempUser.ordonnanceImage = {
- 
-    firstName: req.body.fileName,
-    lastName: lastName,
-    name: imageName,
-    data: buffer,
-    contentType: `image/${extension}`
-  }; 
-  
-  console.log('Ordonnance image uploaded successfully', tempUser.ordonnanceImage);
-  
-const chifa_ordonnanceImages =[sharedData.imageNameChifa, imageName,sharedData.cloudinaryImageUrlC,cloudinaryImageUrlO];
-console.log(sharedData);
-tempUser.chifa_ordonnanceImages = {
-
- coText : chifa_ordonnanceImages
-
-}
-console.log('Chifa and Ordonnance Both images sent together!',tempUser.chifa_ordonnanceImages);
-
-
-  fs.unlink(localPathO, async (err) => {
-    if (err) {
-      console.error(err);
-      // res.status(500).json({ message: 'Failed to unlink file' });
-      return;
-    }else {
-      console.log("file unlinked ")
-    }});
-
-
-});});
 
 // /workspace/test-jisr/src/public/Images/Abdesslam
 let globalAdr;
@@ -727,6 +627,7 @@ app.post('/adresse', async (req, res, next) => {
   console.log('User created:');
   // console.log(tempUser.chifaImage.data==tempUser.ordonnanceImage.data);
 });
+
 
 app.get("/adresses", async function(req, res) {
   try {
